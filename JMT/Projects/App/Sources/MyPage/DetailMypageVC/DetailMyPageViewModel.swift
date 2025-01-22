@@ -5,14 +5,14 @@
 //  Created by 이지훈 on 1/19/24.
 //
 
-import Foundation
 import Alamofire
+import Foundation
 import UIKit
 
 class DetailMyPageViewModel {
     
     weak var coordinator: DetailMyPageCoordinator?
-    private let keychainAccess: KeychainAccessible
+    private let keychainAccess: DefaultKeychainService
     
     
     var userInfo: MyPageUserLogin? {
@@ -25,22 +25,24 @@ class DetailMyPageViewModel {
         
     var isDefaultProfileImage: Bool = false
     
-    init(keychainAccess: KeychainAccessible = DefaultKeychainAccessible()) {
+    init(keychainAccess: DefaultKeychainService = DefaultKeychainService.shared) {
         self.keychainAccess = keychainAccess
     }
     
     // ID 토큰과 액세스 토큰 값을 확인하는 함수
     func fetchTokens() {
         // ID 토큰 저장 여부 플래그 확인
-        if let isIdTokenSaved = keychainAccess.getToken("isIdTokenSaved"), isIdTokenSaved == "true", let idToken = keychainAccess.getToken("idToken") {
+        if let isIdTokenSaved = keychainAccess.getValue(for: KeychainKey.isIdTokenSaved, type: Bool.self),
+            isIdTokenSaved == true,
+           let idToken = keychainAccess.getValue(for: KeychainKey.idToken, type: String.self){
             print("---===---")
             print("ID Token: \(idToken)")
         } else {
             print("ID Token is not available. Checking if saved correctly...")
         }
-
+        
         // 액세스 토큰 조회
-        if let accessToken = keychainAccess.getToken("accessToken") {
+        if let accessToken = keychainAccess.getValue(for: KeychainKey.accessToken, type: String.self) {
             print("Access Token: \(accessToken)")
         } else {
             print("Access Token is not available")
@@ -48,11 +50,8 @@ class DetailMyPageViewModel {
     }
     
     func fetchUserInfo() {
-        guard let accessToken = keychainAccess.getToken("accessToken") else {
-            print("Access Token is not available")
-            return
-        }
-
+        guard let accessToken = keychainAccess.getValue(for: KeychainKey.accessToken, type: String.self) else { return }
+        
         let headers: HTTPHeaders = [
             "accept": "*/*",
             "Authorization": "Bearer \(accessToken)"
@@ -71,11 +70,10 @@ class DetailMyPageViewModel {
     func getUserInfo() {
         UserInfoAPI.getLoginInfo { response in
             switch response {
-            case .success(let info):
+            case .success:
                print(1)
             case .failure(let error):
                 print("getUserInfo 실패!!", error)
-              //self.onFailure?()
             }
         }
     }
@@ -96,8 +94,7 @@ class DetailMyPageViewModel {
     }
         
     func uploadProfileImage(_ image: UIImage) {
-        guard let accessToken = keychainAccess.getToken("accessToken") else {
-            print("Access Token is not available")
+        guard let accessToken = keychainAccess.getValue(for: KeychainKey.accessToken, type: String.self) else {
             return
         }
 
@@ -117,9 +114,7 @@ class DetailMyPageViewModel {
             headers: headers
         ).responseDecodable(of: ImageResponse.self) { response in
             switch response.result {
-            case .success(let responseData):
-                print(responseData.message)
-             //   self.userInfo?.data?.profileImg = responseData.data
+            case .success:
                 self.onUserInfoLoaded?()
             case .failure(let error):
                 print(error)
@@ -128,14 +123,14 @@ class DetailMyPageViewModel {
     }
 
     func handleLoginSuccess(idToken: String) {
-        keychainAccess.saveToken("idToken", idToken)
-        keychainAccess.saveToken("isIdTokenSaved", "true") // 플래그 저장
+        keychainAccess.setValue(idToken, for: KeychainKey.idToken)
+        keychainAccess.setValue(true, for: KeychainKey.isIdTokenSaved)
         print("ID Token saved: \(idToken)")
     }
     
     // 로그아웃 처리
     func logout() {
-        keychainAccess.removeAll()
+        keychainAccess.removeAllKeychain()
         print("Logged out and all tokens removed.")
     }
 

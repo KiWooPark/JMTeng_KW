@@ -7,15 +7,11 @@
 
 import UIKit
 
-class MyPageViewController: UIViewController, UIScrollViewDelegate
-
-{
+class MyPageViewController: UIViewController, UIScrollViewDelegate {
     
     var viewModel: MyPageViewModel?
     var restaurants: [Restaurant] = []
-    
-    
-    
+
     private var fixedSegmentedControl: UISegmentedControl!
     private var currentViewController: UIViewController?
     private var pageViewController: UIPageViewController!
@@ -25,24 +21,22 @@ class MyPageViewController: UIViewController, UIScrollViewDelegate
     
     @IBOutlet weak var mainScrollView: UIScrollView!
     @IBOutlet weak var contentView: UIView!
-    @IBOutlet weak var HeaderView: UIView!
-    @IBOutlet weak var MyPageSegment: UISegmentedControl!
+    @IBOutlet weak var headerView: UIView!
+    @IBOutlet weak var myPageSegment: UISegmentedControl!
     @IBOutlet weak var fixedHeaderView: UIView!
-    @IBOutlet weak var ProfileImage: UIImageView!
-    @IBOutlet weak var NickNameLabel: UILabel!
+    @IBOutlet weak var profileImage: UIImageView!
+    @IBOutlet weak var nickNameLabel: UILabel!
     @IBOutlet weak var registerResturant: UILabel!
-    
     
     let fixedHeaderViewHeight: CGFloat = 80
     let triggerOffset: CGFloat = 150
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupSegmentedControl()
         setupFixedHeaderView()
-        switchToViewController(at: MyPageSegment.selectedSegmentIndex)
+        switchToViewController(at: myPageSegment.selectedSegmentIndex)
 
         viewModel?.onUserInfoLoaded = { [weak self] in
             DispatchQueue.main.async {
@@ -53,14 +47,6 @@ class MyPageViewController: UIViewController, UIScrollViewDelegate
         viewModel?.fetchUserInfo {
             self.fetchRestaurants()
         }
-        
-//        viewModel?.onTotalRestaurantsUpdated = { [weak self] in
-//            guard let self = self, let totalRestaurants = self.viewModel?.totalRestaurants else { return }
-//            DispatchQueue.main.async {
-//                self.registerResturant.text = "\(totalRestaurants)"
-//            }
-//            print("등록맛집개수 \(totalRestaurants)")
-//        }
     }
     
     func fetchRestaurants() {
@@ -81,31 +67,24 @@ class MyPageViewController: UIViewController, UIScrollViewDelegate
         viewModel?.locationManager.startUpdateLocation()
     }
 
-    
     private func updateUI() {
         if let userInfo = viewModel?.userInfo {
-            NickNameLabel.text = userInfo.data?.nickname
+            nickNameLabel.text = userInfo.data?.nickname
             //fetchRestaurantInfo.text = userInfo.data?.email
             if let imageUrl = URL(string: userInfo.data?.profileImg ?? "") {
                 DispatchQueue.global().async {
                     if let data = try? Data(contentsOf: imageUrl) {
                         DispatchQueue.main.async {
-                            self.ProfileImage.image = UIImage(data: data)
+                            self.profileImage.image = UIImage(data: data)
                             // 이미지 뷰를 원형으로 만듭니다.
-                            self.ProfileImage.layer.cornerRadius = self.ProfileImage.frame.width / 2
-                            self.ProfileImage.clipsToBounds = true // 이 줄은 masksToBounds와 같은 역할을 합니다.
+                            self.profileImage.layer.cornerRadius = self.profileImage.frame.width / 2
+                            self.profileImage.clipsToBounds = true // 이 줄은 masksToBounds와 같은 역할을 합니다.
                         }
                     }
                 }
             }
-            print(NickNameLabel)
-            print(registerResturant)
         }
     }
-    
-    
-    
-    
     
     func setupFixedHeaderView() {
         fixedHeaderView.isHidden = true
@@ -119,20 +98,20 @@ class MyPageViewController: UIViewController, UIScrollViewDelegate
         // Initialize the fixedSegmentedControl with the calculated y position
         fixedSegmentedControl = UnderlineSegmentedControl(items: ["등록한 맛집", "나의 후기"])
         fixedSegmentedControl.frame = CGRect(x: 10, y: yPosition, width: fixedHeaderView.frame.width - 20, height: segmentedControlHeight)
-        fixedSegmentedControl.selectedSegmentIndex = MyPageSegment.selectedSegmentIndex
+        fixedSegmentedControl.selectedSegmentIndex = myPageSegment.selectedSegmentIndex
         fixedSegmentedControl.addTarget(self, action: #selector(segmentedControlValueChanged(_:)), for: .valueChanged)
         fixedHeaderView.addSubview(fixedSegmentedControl)
     }
     
     // 세그먼트 컨트롤 설정 및 액션 추가
     private func setupSegmentedControl() {
-        MyPageSegment.addTarget(self, action: #selector(segmentedControlValueChanged(_:)), for: .valueChanged)
+        myPageSegment.addTarget(self, action: #selector(segmentedControlValueChanged(_:)), for: .valueChanged)
     }
     
     // 세그먼트 컨트롤 값 변경 시 호출될 메서드
     @objc private func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         let selectedIndex = sender.selectedSegmentIndex
-        MyPageSegment.selectedSegmentIndex = selectedIndex
+        myPageSegment.selectedSegmentIndex = selectedIndex
         fixedSegmentedControl.selectedSegmentIndex = selectedIndex
         switchToViewController(at: selectedIndex)
     }
@@ -187,7 +166,7 @@ class MyPageViewController: UIViewController, UIScrollViewDelegate
         }
     }
     
-    @IBAction func DetailMyPage(_ sender: Any) {
+    @IBAction func detailMyPage(_ sender: Any) {
         viewModel?.coordinator?.showDetailMyPageVieController()
         print(1)
     }
@@ -196,7 +175,5 @@ class MyPageViewController: UIViewController, UIScrollViewDelegate
         //   updateDataSource(segmentIndex: sender.selectedSegmentIndex)
         
         //   coordinator?.goToDetailView(for: sender.selectedSegmentIndex)
-        
     }
 }
-

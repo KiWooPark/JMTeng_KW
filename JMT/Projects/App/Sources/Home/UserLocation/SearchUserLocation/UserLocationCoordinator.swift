@@ -17,7 +17,6 @@ protocol UserLocationCoordinator: Coordinator {
 }
 
 class DefaultUserLocationCoordinator: UserLocationCoordinator {
-  
     var parentCoordinator: Coordinator?
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController?
@@ -27,17 +26,18 @@ class DefaultUserLocationCoordinator: UserLocationCoordinator {
     var enterPoint: Int = 0
     
     init(navigationController: UINavigationController?, parentCoordinator: Coordinator,
-         finishDelegate: CoordinatorFinishDelegate) {
+         finishDelegate: CoordinatorFinishDelegate)
+    {
         self.navigationController = navigationController
         self.parentCoordinator = parentCoordinator
         self.finishDelegate = finishDelegate
     }
     
     func start() {
-        let userLocationViewController = UserLocationViewController.instantiateFromStoryboard(storyboardName: "UserLocation") as UserLocationViewController
+        guard let userLocationViewController = UserLocationViewController.instantiateFromStoryboard(storyboardName: "UserLocation") as? UserLocationViewController else { return }
         userLocationViewController.viewModel?.enterPoint = enterPoint
         userLocationViewController.viewModel?.coordinator = self
-        self.navigationController?.pushViewController(userLocationViewController, animated: true)
+        navigationController?.pushViewController(userLocationViewController, animated: true)
     }
     
     func setButtonPopupCoordinator() {
@@ -50,8 +50,9 @@ class DefaultUserLocationCoordinator: UserLocationCoordinator {
             setButtonPopupCoordinator()
         }
         
-        let coordinator = getChildCoordinator(.buttonPopup) as! ButtonPopupCoordinator
-        coordinator.start()
+        if let coordinator = getChildCoordinator(.buttonPopup) as? ButtonPopupCoordinator {
+            coordinator.start()
+        }
     }
     
     func setConvertUserLocationCoordinator() {
@@ -64,8 +65,9 @@ class DefaultUserLocationCoordinator: UserLocationCoordinator {
             setConvertUserLocationCoordinator()
         }
         
-        let coordinator = getChildCoordinator(.convertUserLocation) as! ConvertUserLocationCoordinator
-        coordinator.startWithData(data: data)
+        if let coordinator = getChildCoordinator(.convertUserLocation) as? ConvertUserLocationCoordinator {
+            coordinator.startWithData(data: data)
+        }
     }
     
     func getChildCoordinator(_ type: CoordinatorType) -> Coordinator? {
@@ -82,11 +84,10 @@ class DefaultUserLocationCoordinator: UserLocationCoordinator {
     
         return childCoordinator
     }
-    
 }
 
 extension DefaultUserLocationCoordinator: CoordinatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: Coordinator) {
-        self.childCoordinators = self.childCoordinators.filter{ $0.type != childCoordinator.type }
+        childCoordinators = childCoordinators.filter { $0.type != childCoordinator.type }
     }
 }

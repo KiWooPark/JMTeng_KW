@@ -1,0 +1,11 @@
+{
+  "data": {
+    "grantType": "Bearer",
+    "accessToken": "abc123def456",
+    "refreshToken": "refresh789xyz",
+    "accessTokenExpiresIn": 3600,
+    "userLoginAction": "login"
+  },
+  "message": "Login successful",
+  "code": "200"
+}

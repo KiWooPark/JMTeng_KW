@@ -8,9 +8,6 @@
 import UIKit
 
 protocol ProfileImageCoordinator: Coordinator {
-    
-    func start()
-    
     func showTabBarViewController()
     func showImagePicker()
     
@@ -19,7 +16,6 @@ protocol ProfileImageCoordinator: Coordinator {
 }
 
 class DefaultProfileImageCoordinator: ProfileImageCoordinator {
-    
     weak var parentCoordinator: Coordinator?
     var childCoordinators: [Coordinator] = []
     
@@ -29,32 +25,32 @@ class DefaultProfileImageCoordinator: ProfileImageCoordinator {
     
     init(navigationController: UINavigationController?,
          parentCoordinator: Coordinator,
-         finishDelegate: CoordinatorFinishDelegate) {
+         finishDelegate: CoordinatorFinishDelegate)
+    {
         self.navigationController = navigationController
         self.parentCoordinator = parentCoordinator
         self.finishDelegate = finishDelegate
     }
     
     func start() {
-        let profileViewController = ProfileImageViewController.instantiateFromStoryboard(storyboardName: "Login") as ProfileImageViewController
+        guard let profileViewController = ProfileImageViewController.instantiateFromStoryboard(storyboardName: "Login") as? ProfileImageViewController else { return }
         profileViewController.viewModel?.coordinator = self
-        self.navigationController?.pushViewController(profileViewController, animated: true)
+        navigationController?.pushViewController(profileViewController, animated: true)
     }
     
     func showTabBarViewController() {
-        let appCoordinator = self.getTopCoordinator()
-        
-        let socialLoginCoordinator = appCoordinator.childCoordinators.first(where: { $0 is SocialLoginCoordinator })
-        socialLoginCoordinator?.finish()
-        
-        appCoordinator.showTabBarViewController()
+        if let appCoordinator = getTopCoordinator() {
+            let socialLoginCoordinator = appCoordinator.childCoordinators.first(where: { $0 is SocialLoginCoordinator })
+            socialLoginCoordinator?.finish()
+            
+            appCoordinator.showTabBarViewController()
+        }
     }
     
     func showImagePicker() {
-        
         let photoService = DefaultPhotoAuthService()
         
-        var config = PhotoKitConfiguration()
+        var config = PhotoKitConfiguration.shared
         config.library.defaultMultipleSelection = false
         
         let picker = PhotoKitNavigationController(configuration: config)
@@ -67,9 +63,9 @@ class DefaultProfileImageCoordinator: ProfileImageCoordinator {
 
         photoService.requestAuthorization { result in
             switch result {
-            case .success(_):
+            case .success:
                 self.navigationController?.present(picker, animated: true)
-            case .failure(_):
+            case .failure:
                 if let topViewController = self.navigationController?.topViewController {
                     topViewController.showAccessDeniedAlert(type: .photo)
                 }
@@ -78,14 +74,16 @@ class DefaultProfileImageCoordinator: ProfileImageCoordinator {
     }
     
     func handleImagePickerResult(_ image: UIImage?, isDefault: Bool) {
-        if let profileImageViewController = self.navigationController?.topViewController as? ProfileImageViewController {
+        if let profileImageViewController = navigationController?.topViewController as? ProfileImageViewController {
             profileImageViewController.profileImageView.image = image
             profileImageViewController.viewModel?.isDefaultProfileImage = isDefault
         }
     }
     
     func setProfilePopupCoordinator() {
-        let coordinator = DefaultProfileImagePopupCoordinator(navigationController: navigationController, parentCoordinator: self, finishDelegate: self)
+        let coordinator = DefaultProfileImagePopupCoordinator(navigationController: navigationController,
+                                                              parentCoordinator: self,
+                                                              finishDelegate: self)
         childCoordinators.append(coordinator)
     }
     
@@ -94,8 +92,9 @@ class DefaultProfileImageCoordinator: ProfileImageCoordinator {
             setProfilePopupCoordinator()
         }
         
-        let coordinator = getChildCoordinator(.profilePopup) as! ProfileImagePopupCoordinator
-        coordinator.start()
+        if let coordinator = getChildCoordinator(.profilePopup) as? ProfileImagePopupCoordinator {
+            coordinator.start()
+        }
     }
     
     func getChildCoordinator(_ type: CoordinatorType) -> Coordinator? {
@@ -114,6 +113,6 @@ class DefaultProfileImageCoordinator: ProfileImageCoordinator {
 
 extension DefaultProfileImageCoordinator: CoordinatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: Coordinator) {
-        self.childCoordinators = self.childCoordinators.filter{ $0.type != childCoordinator.type }
+        childCoordinators = childCoordinators.filter { $0.type != childCoordinator.type }
     }
 }

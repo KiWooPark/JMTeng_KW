@@ -22,7 +22,7 @@ class NicknameViewModel: NicknameModelProtocol {
     weak var coordinator: NicknameCoordinator?
     var workItem: DispatchWorkItem?
     
-    var onSuccess: ((UIUpdateState) -> ())?
+    var onSuccess: ((UIUpdateState) -> Void)?
     var isSaveNickname: Bool = false
     var preventButtonTouch: Bool = false
     
@@ -98,11 +98,12 @@ class NicknameViewModel: NicknameModelProtocol {
     func isValidNickname(text: String) -> Bool {
         // 정규식 패턴 정의: 알파벳, 숫자, 밑줄, 대시 포함, 3~10자 길이
         let pattern = "^[A-Za-z0-9_\\-가-힣]{2,10}$"
-        let regex = try! NSRegularExpression(pattern: pattern)
-        let range = NSRange(location: 0, length: text.utf16.count)
-        
-        return regex.firstMatch(in: text, options: [], range: range) != nil
+        if let regex = try? NSRegularExpression(pattern: pattern) {
+            let range = NSRange(location: 0, length: text.utf16.count)
+            
+            return regex.firstMatch(in: text, options: [], range: range) != nil
+        }
+    
+        return false
     }
 }
-
-

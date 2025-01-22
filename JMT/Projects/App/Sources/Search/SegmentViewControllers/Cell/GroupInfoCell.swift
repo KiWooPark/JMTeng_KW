@@ -5,8 +5,8 @@
 //  Created by PKW on 3/15/24.
 //
 
-import UIKit
 import Kingfisher
+import UIKit
 
 class GroupInfoCell: UICollectionViewCell {
     
@@ -34,16 +34,11 @@ class GroupInfoCell: UICollectionViewCell {
     
     func setupData(groupData: SearchGroupItems?) {
         if let data = groupData {
-            if let url = URL(string: data.groupProfileImageUrl ?? "") {
-                groupProfileImageView.kf.setImage(with: url)
-            } else {
-                groupProfileImageView.image = JMTengAsset.defaultProfileImage.image
-            }
-            
-            groupNameLabel.text = groupData?.groupName ?? ""
-            memberCountLabel.text = "멤버 \(groupData?.memberCnt ?? 0)"
-            restaurantCountLabel.text = "맛집 \(groupData?.restaurantCnt ?? 0)"
-            groupIntroduceLabel.text = groupData?.groupIntroduce ?? ""
+            groupProfileImageView.loadImage(urlString: data.groupProfileImageUrl, defaultImage: JMTengAsset.defaultProfileImage.image)
+            groupNameLabel.text = data.groupName
+            memberCountLabel.text = "멤버 \(data.memberCnt)"
+            restaurantCountLabel.text = "맛집 \(data.restaurantCnt)"
+            groupIntroduceLabel.text = data.groupIntroduce
         }
     }
 }

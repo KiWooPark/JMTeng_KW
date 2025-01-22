@@ -21,3 +21,23 @@ struct GroupDI: Assembly {
         }
     }
 }
+
+/*
+ common
+ coordinator
+ customclass
+ customView
+ DI
+ extention
+ Login
+ home
+ search
+ mypage
+ network
+ photoKit
+
+ 
+ 
+ 
+ 
+ */

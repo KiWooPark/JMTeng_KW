@@ -5,8 +5,8 @@
 //  Created by PKW on 2024/02/10.
 //
 
-import Foundation
 import CoreLocation
+import Foundation
 import UIKit
 
 final class LocationManager: CLLocationManager {
@@ -49,18 +49,16 @@ extension LocationManager: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
        
         guard let location = locations.first, !isUpdatingLocation else { return }
-        print("권한 위치 정보 업데이트")
+
         isUpdatingLocation = true
         coordinate = location.coordinate
-        
+    
         // 위치 데이터 처리
         didUpdateLocations?()
         stopUpdatingLocation()
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        
-        print("권한 설정 업데이트 실패 ====")
         self.stopUpdatingLocation()
     }
     
@@ -80,6 +78,8 @@ extension LocationManager: CLLocationManagerDelegate {
             case .authorizedAlways, .authorizedWhenInUse:
                 print("권한 설정")
                 startUpdatingLocation()
+            default:
+                fatalError("locationManagerDidChangeAuthorization Default")
             }
             
             previousAuthorizationStatus = newStatus

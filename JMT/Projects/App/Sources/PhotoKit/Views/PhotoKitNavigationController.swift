@@ -38,7 +38,6 @@ class PhotoKitNavigationController: UINavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-    
         viewControllers = [albumViewController]
         albumViewController.totalSelectPhotoCount = photosCount
 

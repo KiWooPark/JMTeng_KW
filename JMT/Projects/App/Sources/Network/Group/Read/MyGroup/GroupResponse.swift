@@ -22,7 +22,3 @@ struct MyGroupData: Decodable {
     let privateGroup: Bool
     var isSelected: Bool
 }
-
-
-
-

@@ -5,8 +5,8 @@
 //  Created by PKW on 2024/02/04.
 //
 
-import UIKit
 import FloatingPanel
+import UIKit
 
 class RegistrationRestaurantCategoryBottomSheetViewController: UIViewController {
     

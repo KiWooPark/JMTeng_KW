@@ -38,13 +38,13 @@ extension Coordinator {
         finishDelegate?.coordinatorDidFinish(childCoordinator: self)
     }
     
-    func getTopCoordinator() -> AppCoordinator {
+    func getTopCoordinator() -> AppCoordinator? {
         var coordinator: Coordinator = self
         while let parent = coordinator.parentCoordinator {
             coordinator = parent
         }
-        print("cc", coordinator)
-        return coordinator as! AppCoordinator
+        
+        return coordinator as? AppCoordinator
     }
 }
 

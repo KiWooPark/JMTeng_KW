@@ -16,5 +16,3 @@ struct RestaurantReviewsModel {
     let reviewerImageUrl: String?
     let totalCount: Int
 }
-
-

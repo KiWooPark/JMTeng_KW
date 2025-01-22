@@ -9,13 +9,9 @@ import Foundation
 
 import UIKit
 
-protocol MyPageChangeNicknaemCoordinator: Coordinator {
-
-    
-}
+protocol MyPageChangeNicknaemCoordinator: Coordinator {}
 
 class DefaultMyPageChangeNicknaemCoordinator: MyPageChangeNicknaemCoordinator {
-   
     var parentCoordinator: Coordinator? = nil
     
     var childCoordinators: [Coordinator] = []
@@ -24,20 +20,12 @@ class DefaultMyPageChangeNicknaemCoordinator: MyPageChangeNicknaemCoordinator {
     var type: CoordinatorType = .changeNickname
     
     init(navigationController: UINavigationController?) {
-    
         self.navigationController = navigationController
     }
     
     func start() {
-        let mypageViewController = ChangeNickNameVC.instantiateFromStoryboard(storyboardName: "changeNickname") as ChangeNickNameVC
-        
+        guard let mypageViewController = ChangeNickNameVC.instantiateFromStoryboard(storyboardName: "changeNickname") as? ChangeNickNameVC else { return }
         mypageViewController.viewModel?.coordinator = self
         self.navigationController?.pushViewController(mypageViewController, animated: true)
-        
-        
     }
-    
-    
-    
-    
 }

@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import UIKit
 import SnapKit
+import UIKit
 
 class CollectionBackgroundWhiteView: UICollectionReusableView {
     
@@ -31,4 +31,3 @@ class CollectionBackgroundWhiteView: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
 }
-

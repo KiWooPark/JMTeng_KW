@@ -33,22 +33,19 @@ class TotalResultViewController: UIViewController {
         let restaurantNib = UINib(nibName: "RestaurantInfoCell", bundle: nil)
         totalResultCollectionView.register(restaurantNib, forCellWithReuseIdentifier: "RestaurantInfoCell")
         
-        NotificationCenter.default.addObserver(self, selector: #selector(handleDataUpdate), name: .didUpdateGroup, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleUpdateData), name: .didUpdateSearchTabData, object: nil)
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-        NotificationCenter.default.removeObserver(self, name: .didUpdateGroup, object: nil)
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: .didUpdateSearchTabData, object: nil)
     }
     
-    @objc func handleDataUpdate() {
+    @objc func handleUpdateData() {
         DispatchQueue.main.async {
             self.totalResultCollectionView.reloadData()
         }
     }
-    
-    
+
     func createLayout() -> UICollectionViewCompositionalLayout {
         let layout = UICollectionViewCompositionalLayout { sectionIndex, env -> NSCollectionLayoutSection? in
             
@@ -200,7 +197,7 @@ extension TotalResultViewController: UICollectionViewDataSource {
                 return cell
             } else {
                 guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "RestaurantInfoCell", for: indexPath) as? RestaurantInfoCell else { return UICollectionViewCell() }
-                cell.setupRestaurantData(restaurantData: viewModel?.restaurants[indexPath.row])
+                cell.setupRestaurantInfoData(data: viewModel?.restaurants[indexPath.row])
                 return cell
             }
         case 1:
@@ -222,7 +219,7 @@ extension TotalResultViewController: UICollectionViewDataSource {
                 return cell
             } else {
                 guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "RestaurantInfoCell", for: indexPath) as? RestaurantInfoCell else { return UICollectionViewCell() }
-                cell.setupOutBoundrestaurantData(outBoundRestaurantData: viewModel?.outBoundrestaurants[indexPath.row])
+                cell.setupRestaurantInfoData(data: viewModel?.outBoundrestaurants[indexPath.row])
                 
                 return cell
             }
@@ -238,17 +235,23 @@ extension TotalResultViewController: UICollectionViewDelegate {
         case UICollectionView.elementKindSectionHeader:
             switch indexPath.section {
             case 0:
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "titleHeaderView", for: indexPath) as! TitleHeaderView
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
+                                                                                   withReuseIdentifier: "titleHeaderView",
+                                                                                   for: indexPath) as? TitleHeaderView else { return UICollectionReusableView() }
                 header.delegate = self
                 header.setupTitle(title: "맛집")
                 return header
             case 1:
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "titleHeaderView", for: indexPath) as! TitleHeaderView
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
+                                                                                   withReuseIdentifier: "titleHeaderView",
+                                                                                   for: indexPath) as? TitleHeaderView else { return UICollectionReusableView() }
                 header.delegate = self
                 header.setupTitle(title: "그룹")
                 return header
             case 2:
-                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "DifferentGroupHeader", for: indexPath) as? DifferentGroupHeader else { return UICollectionReusableView() }
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, 
+                                                                                   withReuseIdentifier: "DifferentGroupHeader",
+                                                                                   for: indexPath) as? DifferentGroupHeader else { return UICollectionReusableView() }
                 return header
             default:
                 return UICollectionReusableView()

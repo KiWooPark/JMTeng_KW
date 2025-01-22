@@ -26,14 +26,13 @@ class DefaultSearchCoordinator: SearchCoordinator {
     var finishDelegate: CoordinatorFinishDelegate?
     var type: CoordinatorType = .search
     
-    
     init(navigationController: UINavigationController?, parentCoordinator: Coordinator) {
         self.navigationController = navigationController
         self.parentCoordinator = parentCoordinator
     }
     
     func start() {
-        let searchViewController = SearchViewController.instantiateFromStoryboard(storyboardName: "Search") as SearchViewController
+        guard let searchViewController = SearchViewController.instantiateFromStoryboard(storyboardName: "Search") as? SearchViewController else { return }
         searchViewController.viewModel?.coordinator = self
 
         let storyboard = UIStoryboard(name: "Search", bundle: nil)
@@ -51,7 +50,7 @@ class DefaultSearchCoordinator: SearchCoordinator {
         
         searchViewController.pageViewController = pageViewController
         
-        self.navigationController?.pushViewController(searchViewController, animated: true)
+        navigationController?.pushViewController(searchViewController, animated: true)
     }
     
     func setRestaurantDetailCoordinator() {
@@ -64,8 +63,9 @@ class DefaultSearchCoordinator: SearchCoordinator {
             setRestaurantDetailCoordinator()
         }
         
-        let coordinator = getChildCoordinator(.restaurantDetail) as! RestaurantDetailCoordinator
-        coordinator.start(id: id)
+        if let coordinator = getChildCoordinator(.restaurantDetail) as? RestaurantDetailCoordinator {
+            coordinator.start(id: id)
+        }
     }
     
     func setButtonPopupCoordinator() {
@@ -78,18 +78,21 @@ class DefaultSearchCoordinator: SearchCoordinator {
             setButtonPopupCoordinator()
         }
         
-        let coordinator = getChildCoordinator(.buttonPopup) as! ButtonPopupCoordinator
-        coordinator.start()
+        if let coordinator = getChildCoordinator(.buttonPopup) as? ButtonPopupCoordinator {
+            coordinator.start()
+        }
     }
     
     func showWebViewCreateGroupPage() {
-        let coordinator = parentCoordinator?.childCoordinators[2] as! DefaultGroupCoordinator
-        coordinator.showCreateGroupPage()
+        if let coordinator = parentCoordinator?.childCoordinators[2] as? DefaultGroupCoordinator {
+            coordinator.showCreateGroupPage()
+        }
     }
     
     func showWebViewGroupDetilPage(groupId: Int) {
-        let coordinator = parentCoordinator?.childCoordinators[2] as! DefaultGroupCoordinator
-        coordinator.showDetailGroupPage(groupId: groupId)
+        if let coordinator = parentCoordinator?.childCoordinators[2] as? DefaultGroupCoordinator {
+            coordinator.showDetailGroupPage(groupId: groupId)
+        }
     }
     
     func getChildCoordinator(_ type: CoordinatorType) -> Coordinator? {
@@ -112,6 +115,6 @@ class DefaultSearchCoordinator: SearchCoordinator {
 
 extension DefaultSearchCoordinator: CoordinatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: Coordinator) {
-        self.childCoordinators = self.childCoordinators.filter{ $0.type != childCoordinator.type }
+        childCoordinators = childCoordinators.filter { $0.type != childCoordinator.type }
     }
 }

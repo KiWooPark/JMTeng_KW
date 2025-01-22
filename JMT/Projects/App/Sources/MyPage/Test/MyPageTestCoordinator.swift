@@ -9,35 +9,24 @@ import Foundation
 
 import UIKit
 
-protocol MyPageTestCoordinator: Coordinator {
-
-    
-}
+protocol MyPageTestCoordinator: Coordinator {}
 
 class DefaultMyPageTestCoordinator: MyPageTestCoordinator {
-   
     var parentCoordinator: Coordinator? = nil
-    
+
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController?
     var finishDelegate: CoordinatorFinishDelegate?
     var type: CoordinatorType = .home
-    
+
     init(navigationController: UINavigationController?) {
-    
         self.navigationController = navigationController
     }
-    
+
     func start() {
-        let mypageViewController = MyPageTestViewController.instantiateFromStoryboard(storyboardName: "MyPage") as MyPageTestViewController
-        
+        guard let mypageViewController = MyPageTestViewController.instantiateFromStoryboard(storyboardName: "MyPage") as? MyPageTestViewController else { return }
+
         mypageViewController.viewModel?.coordinator = self
         self.navigationController?.pushViewController(mypageViewController, animated: true)
-        
-        
     }
-    
-    
-    
-    
 }

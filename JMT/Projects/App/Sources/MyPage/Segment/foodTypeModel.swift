@@ -12,7 +12,7 @@ struct FoodType {
     let filter: FilterType
     let name: String
     let image: UIImage?
-    let identifier: String //식별자
+    let identifier: String // 식별자
 
     enum FilterType: String { // api용
         case KOREA = "한식"

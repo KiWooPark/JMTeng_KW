@@ -5,15 +5,15 @@
 //  Created by PKW on 2023/12/20.
 //
 
-import UIKit
 import SwinjectStoryboard
 import Toast_Swift
+import UIKit
 
 // 스토리보드
 extension UIViewController {
-    static func instantiateFromStoryboard<T: UIViewController>(storyboardName: String) -> T {
+    static func instantiateFromStoryboard<T: UIViewController>(storyboardName: String) -> T? {
         let storyboard = SwinjectStoryboard.create(name: storyboardName, bundle: nil, container: DependencyInjector.shared.container)
-        return storyboard.instantiateViewController(withIdentifier: String(describing: self)) as! T
+        return storyboard.instantiateViewController(withIdentifier: String(describing: self)) as? T
     }
 }
 
@@ -32,7 +32,8 @@ extension UIViewController {
         self.navigationItem.rightBarButtonItem = moreButton
     }
     
-    @objc private func editMenu() {
+    @objc 
+    private func editMenu() {
         if let vc = self as? RestaurantDetailViewController {
             vc.showMoreMenuBottomSheetViewController()
         }
@@ -58,19 +59,23 @@ extension UIViewController {
         self.navigationItem.leftBarButtonItem = backButton
     }
     
-    @objc private func popViewController() {
+    @objc
+    private func popViewController() {
         // 여기에 백 버튼이 눌렸을 때의 동작 구현
         // 예: 네비게이션 컨트롤러를 통해 이전 화면으로 돌아가기
         navigationController?.popViewController(animated: true)
     }
     
-    @objc private func goToHomeTab() {
+    @objc
+    private func goToHomeTab() {
         self.tabBarController?.selectedIndex = 0
     }
     
-    @objc private func popToRootViewController() {
+    @objc 
+    private func popToRootViewController() {
         
         if let homeViewController = self.navigationController?.viewControllers[0] as? HomeViewController {
+            homeViewController.viewModel?.resetSettings()
             homeViewController.viewModel?.didUpdateGroupRestaurantsData?()
         }
     
@@ -173,4 +178,3 @@ extension UIViewController {
         view.subviews.last?.removeFromSuperview()
     }
 }
-

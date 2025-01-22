@@ -10,7 +10,5 @@ import Foundation
 
 class MyPageTestViewModel {
     weak var coordinator: MyPageTestCoordinator?
-    
-    
     let test = "홈"
 }

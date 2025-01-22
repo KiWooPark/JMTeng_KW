@@ -11,7 +11,6 @@ struct MyPageUserLogin: Codable {
     let data: UserData?
     let message: String
     let code: String
- 
 }
 
 struct UserData: Codable {
@@ -45,7 +44,7 @@ struct Restaurant: Codable {
     let roadAddress: String?
     let x, y: Double?
     let restaurantImageURL, introduce, category, userNickName, groupName: String?
-    let groupId : Int?
+    let groupId: Int?
     let userProfileImageURL: String?
     let canDrinkLiquor: Bool?
     let differenceInDistance: String?

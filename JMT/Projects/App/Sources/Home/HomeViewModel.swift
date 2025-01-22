@@ -5,10 +5,10 @@
 //  Created by PKW on 2023/12/22.
 //
 
-import Foundation
-import UIKit
 import CoreLocation
+import Foundation
 import NMapsMap
+import UIKit
 
 class HomeViewModel {
     // MARK: - Properties
@@ -68,9 +68,8 @@ class HomeViewModel {
     // 데이터와 관련된 프로퍼티들을 선언하는 부분입니다.
     let locationManager = LocationManager.shared
     weak var coordinator: HomeCoordinator?
-//    var coordinate: CLLocationCoordinate2D?
     
-    let sortList = ["가까운 순", "최신 순"]
+    let sortList = ["최신 순", "등록 순"]
     let categoryList = ["한식", "일식", "중식", "양식", "퓨전", "카페", "주점", "기타"]
     let drinkingList = ["주류 가능", "주류 불가능/모름"]
     
@@ -91,11 +90,17 @@ class HomeViewModel {
     var groupList: [MyGroupData] = []
 
     var popularRestaurants: [RestaurantListModel] = []
+    
+    var hasLoadedInitialData = false
+    var currentPage = 0
+    var itemSize = 5
+    var isFetching = false
+    var previousCount = 0
+    
     var restaurants: [RestaurantListModel] = []
     var markerRestaurants: [RestaurantListModel] = []
     
     var reviews: [FindRestaurantReviewsData] = []
-    var isFirstLodingData = true
     
     // MARK: - Initialization
     // 뷰모델 초기화와 관련된 로직을 담당하는 부분입니다.
@@ -118,6 +123,9 @@ class HomeViewModel {
     // 맛집 리스트 관련
     var didUpdateSkeletonView: (() -> Void)?
     var didUpdateBottomSheetTableView: (() -> Void)?
+    
+    var didUpdateMapView: (() -> Void)?
+    var didScrollToItem: ((Int) -> Void)?
 
     // 필터 관련
     var didUpdateFilterTableView: (() -> Void)?
@@ -125,13 +133,13 @@ class HomeViewModel {
 
 // MARK: - Data Fetching
 extension HomeViewModel {
-    //  MARK: - 그룹 맛집 정보 관련 메소드
+    // MARK: - 그룹 맛집 정보 관련 메소드
     // 바텀시트 1번째 섹션에 보여줄 데이터
     func fetchRecentRestaurantsAsync() async throws {
         
         popularRestaurants.removeAll()
         
-        let parameters = PageRequest(page: 1, size: 10, sort: "id,desc")
+        let parameters = PageRequest(page: 1, size: 5, sort: "id,desc")
         let body = RestaurantListRequestBody(userLocation: nil,
                                              startLocation: nil,
                                              endLocation: nil,
@@ -140,7 +148,7 @@ extension HomeViewModel {
     
         do {
             let data = try await ReadRestaurantsAPI.fetchRestaurantListAsync(request: RestaurantListRequest(parameters: parameters,
-                                                                                                              body: body))
+                                                                                                            body: body))
             self.popularRestaurants.append(contentsOf: data.toDomain)
         } catch {
             print(error)
@@ -150,26 +158,33 @@ extension HomeViewModel {
     
     // 바텀시트 2번째 섹션에 보여줄 데이터
     func fetchGroupRestaurantsAsync() async throws {
-    
-        restaurants.removeAll()
-       
+        
+        guard !isFetching else { return }
+        
+        isFetching = true
+        
+        defer {
+            hasLoadedInitialData = true
+            isFetching = false
+        }
+        
         var parameters: PageRequest
         var body: RestaurantListRequestBody
         
         let categoryFilter = selectedCategoryIndex == nil ? nil : selectedCategoryIndex
         let isCanDrinkLiquor = selectedDrinkingIndex == nil ? nil : (selectedDrinkingIndex == 0 ? true : false)
         
+        // 최신순
         if selectedSortIndex == 0 {
-            parameters = PageRequest(page: 1, size: 20, sort: nil)
-            body = RestaurantListRequestBody(userLocation: LocationRequest(x: "\(LocationManager.shared.coordinate?.longitude ?? 0.0)",
-                                                                           y: "\(LocationManager.shared.coordinate?.latitude ?? 0.0)"),
+            parameters = PageRequest(page: currentPage + 1, size: itemSize, sort: "id,desc")
+            body = RestaurantListRequestBody(userLocation: nil,
                                              startLocation: nil,
                                              endLocation: nil,
                                              filter: FilterRequest(categoryFilter: categoryFilter == nil ? nil : SortCategoryType(rawValue: categoryFilter ?? 0)?.countryCode,
                                                                    isCanDrinkLiquor: isCanDrinkLiquor),
                                              groupId: currentGroupId ?? -1)
-        } else {
-            parameters = PageRequest(page: 1, size: 20, sort: "id,desc")
+        } else { // 등록순
+            parameters = PageRequest(page: currentPage + 1, size: itemSize, sort: "id,asc")
             body = RestaurantListRequestBody(userLocation: nil,
                                              startLocation: nil,
                                              endLocation: nil,
@@ -179,8 +194,14 @@ extension HomeViewModel {
         }
         
         do {
-            let data = try await ReadRestaurantsAPI.fetchRestaurantListAsync(request: RestaurantListRequest(parameters: parameters, body: body))
-            self.restaurants.append(contentsOf: data.toDomain)
+            let response = try await ReadRestaurantsAPI.fetchRestaurantListAsync(request: RestaurantListRequest(parameters: parameters, body: body))
+            
+            self.previousCount = self.restaurants.count
+            self.currentPage = response.data.page.currentPage
+            guard response.data.page.empty == false else { return }
+        
+            self.restaurants.append(contentsOf: response.toDomain)
+            
         } catch {
             print(error)
             throw RestaurantError.fetchGroupRestaurantsAsyncError
@@ -192,7 +213,7 @@ extension HomeViewModel {
         
         markerRestaurants.removeAll()
         
-        let parameters = PageRequest(page: 1, size: 20, sort: nil)
+        let parameters = PageRequest(page: 1, size: self.restaurants.count, sort: nil)
         let body = RestaurantListRequestBody(userLocation: LocationRequest(x: "\(LocationManager.shared.coordinate?.longitude ?? 0.0)",
                                                                            y: "\(LocationManager.shared.coordinate?.latitude ?? 0.0)"),
                                              startLocation: LocationRequest(x: "\(bounds.southWestLng)",
@@ -267,14 +288,27 @@ extension HomeViewModel {
         }
     }
     
+    func resetSettings() {
+        hasLoadedInitialData = false
+        isFetching = false
+        currentPage = 0
+        previousCount = 0
+        popularRestaurants.removeAll()
+        restaurants.removeAll()
+    }
+    
+    
     // MARK: - 필터링 관련 메소드
-    // 타입 변경시
+    // 필터 버튼 터치시 필터 타입 변경
     func updateSortType(type: SelectedSortType) {
         sortType = type
     }
     
     // 필터 옵션 변경시
     func updateIndex(row: Int) {
+        
+        resetSettings()
+    
         switch sortType {
         case .sort:
             selectedSortIndex = row
@@ -305,6 +339,9 @@ extension HomeViewModel {
     
     // 필터 옵션 초기화
     func resetUpdateIndex() {
+        
+        resetSettings()
+        
         switch sortType {
         case .category:
             selectedCategoryIndex = nil

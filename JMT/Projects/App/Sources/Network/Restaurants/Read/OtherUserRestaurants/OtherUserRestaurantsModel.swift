@@ -21,4 +21,3 @@ struct OtherUserRestaurantsModelItems {
     let userProfileImageUrl: String?
     let groupName: String
 }
-

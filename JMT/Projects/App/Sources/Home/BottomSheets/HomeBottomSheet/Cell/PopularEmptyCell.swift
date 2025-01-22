@@ -20,8 +20,7 @@ class PopularEmptyCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        registrationRestaurantButton.layer.cornerRadius = 8
-        
+        registrationRestaurantButton.layer.cornerRadius = 8   
     }
     
     @IBAction func didTabRegistrationRestaurantButton(_ sender: Any) {

@@ -13,7 +13,7 @@ class GroupListBottomSheet: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
     }
 }
 
@@ -24,7 +24,9 @@ extension GroupListBottomSheet: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "nameCell", for: indexPath) as? GroupListCell else { return UITableViewCell() }
-        cell.setupData(imageUrl: viewModel?.groupList[indexPath.row].groupProfileImageUrl ?? "", name: viewModel?.groupList[indexPath.row].groupName ?? "", isSelected: viewModel?.groupList[indexPath.row].isSelected ?? false)
+        cell.setupData(imageUrl: viewModel?.groupList[indexPath.row].groupProfileImageUrl ?? "", 
+                       name: viewModel?.groupList[indexPath.row].groupName ?? "",
+                       isSelected: viewModel?.groupList[indexPath.row].isSelected ?? false)
         return cell
     }
 }

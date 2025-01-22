@@ -13,21 +13,9 @@ class RestaurantLocationCell: UITableViewCell {
     @IBOutlet weak var distanceLabel: UILabel!
     @IBOutlet weak var addressLabel: UILabel!
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-    
     func setupData(viewModel: SearchRestaurantsLocationModel?) {
         restaurantNameLabel.text = viewModel?.placeName ?? ""
         distanceLabel.text = (viewModel?.distance ?? 0).distanceWithUnit()
         addressLabel.text = viewModel?.addressName ?? ""
     }
-
 }

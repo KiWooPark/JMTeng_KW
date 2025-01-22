@@ -8,12 +8,12 @@
 import Foundation
 
 struct CreateRestaurantResponse: Decodable {
-    let data: restaurantLocationData
+    let data: RestaurantLocationData
     let message: String
     let code: String
 }
 
-struct restaurantLocationData: Decodable {
+struct RestaurantLocationData: Decodable {
     let restaurantLocationId: Int
     let recommendRestaurantId: Int
 }

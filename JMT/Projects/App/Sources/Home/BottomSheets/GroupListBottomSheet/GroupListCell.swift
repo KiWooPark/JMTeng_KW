@@ -5,8 +5,8 @@
 //  Created by PKW on 3/9/24.
 //
 
-import UIKit
 import Kingfisher
+import UIKit
 
 class GroupListCell: UITableViewCell {
     
@@ -27,12 +27,6 @@ class GroupListCell: UITableViewCell {
         groupImageView.image = nil
         groupNameLabel.text = ""
         selectedMarkImageView.image = nil
-    }
-    
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
     
     func setupData(imageUrl: String, name: String, isSelected: Bool) {

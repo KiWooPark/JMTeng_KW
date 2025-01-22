@@ -13,7 +13,6 @@ protocol CreateGroupCoordinator: Coordinator {
 }
 
 class DefaultCreateGroupCoordinator: CreateGroupCoordinator {
-    
     var parentCoordinator: Coordinator?
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController?
@@ -21,14 +20,15 @@ class DefaultCreateGroupCoordinator: CreateGroupCoordinator {
     var type: CoordinatorType = .createGroup
     
     init(navigationController: UINavigationController?, parentCoordinator: Coordinator,
-         finishDelegate: CoordinatorFinishDelegate) {
+         finishDelegate: CoordinatorFinishDelegate)
+    {
         self.navigationController = navigationController
         self.parentCoordinator = parentCoordinator
         self.finishDelegate = finishDelegate
     }
     
     func start() {
-        let createGroupViewController = CreateGroupViewController.instantiateFromStoryboard(storyboardName: "CreateGroup") as CreateGroupViewController
+        guard let createGroupViewController = CreateGroupViewController.instantiateFromStoryboard(storyboardName: "CreateGroup") as? CreateGroupViewController else { return }
         createGroupViewController.coordinator = self
         self.navigationController?.pushViewController(createGroupViewController, animated: true)
     }
@@ -38,9 +38,9 @@ class DefaultCreateGroupCoordinator: CreateGroupCoordinator {
         
         switch type {
         case .buttonPopup:
-            childCoordinator = childCoordinators.first(where: { $0 is ButtonPopupCoordinator })
+            childCoordinator = self.childCoordinators.first(where: { $0 is ButtonPopupCoordinator })
         case .convertUserLocation:
-            childCoordinator = childCoordinators.first(where: { $0 is ConvertUserLocationCoordinator })
+            childCoordinator = self.childCoordinators.first(where: { $0 is ConvertUserLocationCoordinator })
         default:
             break
         }
@@ -59,6 +59,6 @@ class DefaultCreateGroupCoordinator: CreateGroupCoordinator {
 
 extension DefaultCreateGroupCoordinator: CoordinatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: Coordinator) {
-        self.childCoordinators = self.childCoordinators.filter{ $0.type != childCoordinator.type }
+        self.childCoordinators = self.childCoordinators.filter { $0.type != childCoordinator.type }
     }
 }

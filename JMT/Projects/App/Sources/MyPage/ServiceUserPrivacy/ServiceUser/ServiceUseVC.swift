@@ -26,5 +26,4 @@ class ServiceUseVC: UIViewController {
             wkweb.load(request)
         }
     }
-
 }

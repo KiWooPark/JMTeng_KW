@@ -1,0 +1,188 @@
+# Git URL : https://github.com/realm/SwiftLint
+# Reference : https://realm.github.io/SwiftLint/index.html
+# 룰 적용 제외할 파일
+excluded:
+  - Pods
+  - JMTeng/AppDelegate.swift
+  - JMTeng/SceneDelegate.swift
+  - JMTeng/AppTest.swift
+  
+# 실행에서 제외할 룰
+disabled_rules:
+  - closure_parameter_position             # 클로저 매개변수 위치 (중괄호와 같은 행)
+  - cyclomatic_complexity                  # 순환 복잡성
+  - file_length                            # 파일 줄 길이 제한
+  - for_where                              # for where 절 선호 (for 문 내 if 사용 대체)
+  - function_body_length                   # 함수 본문의 행 길이 제한
+  - function_parameter_count               # 파라미터 갯수 제한
+  - inclusive_language                     # 포괄적 언어 사용 (인종, 성별, 사회경제적 지위를 나타내는 언어 사용금지)
+  - large_tuple                            # 튜플 인자 수 제한
+  - nesting                                # 중첩
+  - opening_brace                          # 중괄호 선언 조건 (중괄호 앞 단일 공백 및 선언과 같은 행)
+  - redundant_optional_initialization      # 옵셔널 타입을 nil로 초기화 중복
+  - statement_position                     # 구문 위치 제한 (else, catch 등이 선언 바로 뒤 한칸 공백 후 위치함) - 선택 필요
+  - syntactic_sugar                        # 간결한 표현 (Array 대신 [Int] 등의 표현)
+  - todo                                   # TODO, FIXME 주석 제한
+  - trailing_comma                         # 배열 및 딕셔너리에서 후행 쉼표 조건 (적용 혹은 미적용)
+  - trailing_whitespace                    # 후행 공백 (선행 공백과 더불어 필요없다고 미적용이 불필요하다고 생각됨) - 선택 필요
+  - type_body_length                       # 타입 본문의 행 길이 제한
+  - unused_closure_parameter               # 미사용 클로저 파라미터 _ 대체
+  - unused_control_flow_label              # 미사용 제어 플로우 제거
+  - unused_optional_binding                # 사용되지 않는 옵셔널 바인딩 제한
+  - vertical_whitespace                    # 세로 공백
+
+# 기본(default) 룰이 아닌 룰들을 활성화
+opt_in_rules:
+  - anyobject_protocol                          # 프로토콜에 class 대신 AnyObject를 권장
+  - array_init                                  # 불필요한 배열 초기화 방지
+  - attributes                                  # @IBOutlet, @IBAction이 올바르게 적용되고 적절한 위치에 있는지 확인
+  - closure_end_indentation                     # 클로저의 끝 괄호를 시작한 행과의 들여쓰기 맞춤
+  - closure_spacing                             # 클로저 내부 공백 규칙
+  - collection_alignment                        # 컬렉션 요소들이 적절히 정렬되어야 함을 요구합니다.
+  - contains_over_first_not_nil                 # .first(where:) != nil 대신 .contains(where:) 사용을 권장합니다.
+  - empty_count                                 # count보다 isEmpty 권장
+  - empty_string                                # == ""보다 isEmpty 권장
+  - empty_xctest_method                         # XCTest에서 비어있는 테스트 메소드가 없어야 함을 요구합니다.
+  - explicit_init                               # 명시적인 init 호출을 지양하도록 권장합니다.
+  - extension_access_modifier                   # 확장에 접근 제한자 사용이 일관되게 적용되어야 함을 요구합니다.
+  - fallthrough                                 # switch 문의 fallthrough 사용을 감지하고 경고합니다.
+  - fatal_error_message                         # fatalError() 호출 시 설명 메시지 제공을 권장합니다.
+  - file_header                                 # 파일의 상단에 특정 헤더가 포함되어야 함을 요구합니다.
+  - first_where                                 # .first(where:) 사용을 권장합니다.
+  - identical_operands                          # 조건문 내에서 동일한 피연산자가 사용된 경우를 감지합니다.
+  - joined_default_parameter                    # .joined() 호출 시 기본 매개변수를 사용하도록 권장합니다.
+  - last_where                                  # .last(where:) 사용을 권장합니다.
+  - let_var_whitespace                          # let과 var 선언 사이에 적절한 공백을 유지하도록 요구합니다.
+  - literal_expression_end_indentation          # 리터럴 표현식의 종료 부분 들여쓰기를 검사합니다.
+  - lower_acl_than_parent                       # 부모 요소보다 낮은 접근 제어 레벨을 갖는 경우를 경고합니다.
+  - nimble_operator                             # Nimble 테스트 프레임워크에서 사용하는 연산자의 사용을 감지합니다.
+  - operator_usage_whitespace                   # 연산자 사용 시 주변 공백의 일관성을 검사합니다.
+  - orphaned_doc_comment                        # 주석이 어떠한 선언과도 연결되지 않았을때
+  - overridden_super_call                       # 오버라이드된 메소드에서 super 호출의 유무를 검사합니다.
+  - override_in_extension                       # 확장에서 메소드를 오버라이드하는 것을 감지합니다.
+  - pattern_matching_keywords                   # case let, case var 사용을 검사합니다.
+  - prohibited_super_call                       # 특정 메소드에서 super 호출을 금지합니다.
+  - quick_discouraged_call                      # Quick 테스트 프레임워크 사용 시 권장되지 않는 호출을 감지합니다.
+  - quick_discouraged_focused_test              # Quick에서 특정 테스트에 초점을 맞추는 것을 감지합니다.
+  - quick_discouraged_pending_test              # Quick에서 보류 중인 테스트를 감지합니다.
+  - redundant_nil_coalescing                    # 불필요한 nil 병합 연산자 사용을 지적합니다.
+  - single_test_class                           # 하나의 테스트 클래스에 여러 테스트가 포함되어 있는 경우를 경고합니다.
+  - sorted_first_last                           # 정렬된 컬렉션에서 first나 last를 호출하는 대신 min()이나 max() 사용을 권장합니다.
+  - sorted_imports                              # import 시 알파벳 순 정렬
+  - static_operator                             # 연산자를 정적으로 정의할 때 사용합니다.
+  - unneeded_parentheses_in_closure_argument    # 클로저 인자 주변의 불필요한 괄호를 제거하도록 권장합니다.
+  - untyped_error_in_catch                      # catch 블록에서 에러 타입을 명시하지 않는 경우를 경고합니다.
+  - used_import                                 # 사용되지 않는 모듈 import 알림
+  - vertical_parameter_alignment_on_call        # 함수 호출 시 매개변수의 수직 정렬을 검사합니다.
+  - xct_specific_matcher                        # XCTest에서 특정 매처의 사용을 감지합니다.
+  - yoda_condition                              # 상수는 비교 조건문 오른쪽에 배치
+  
+# Customized Configurable Rules
+line_length:
+  warning: 200
+  ignores_urls: true                       # URL에 대해 행 길이 제한 미적용
+  ignores_comments: true                   # 코멘트에 대해 행 길이 제한 미적용
+  ignores_interpolated_strings: true       # 보간된 문자열 행 길이 제한 미적용
+  
+force_cast: error
+
+nesting:
+  type_level:
+    warning: 3
+  statement_level:
+    warning: 5
+
+## 식별자 네이밍 커스텀 정의
+identifier_name:
+  allowed_symbols: "_"
+  min_length: 1
+  max_length:
+    warning: 90
+    error: 1000
+  excluded:
+    - id
+    
+# 타입 네이밍 커스텀 정의
+type_name:
+  min_length:
+    warning: 1
+  max_length:
+    warning: 120
+  allowed_symbols:
+    - _
+
+# ------------------------------
+## 기본 적용되는 룰에서 사용하지 않는 룰
+#disabled_rules:
+#  - trailing_whitespace                    # 후행 공백 (선행 공백과 더불어 필요없다고 미적용이 불필요하다고 생각됨) - 선택 필요
+#  - nesting                                # 중첩
+#  - vertical_whitespace                    # 세로 공백
+#  - redundant_optional_initialization      # 옵셔널 타입을 nil로 초기화 중복
+#  - unused_closure_parameter               # 미사용 클로저 파라미터 _ 대체
+#  - syntactic_sugar                        # 간결한 표현 (Array 대신 [Int] 등의 표현)
+#  - cyclomatic_complexity                  # 순환 복잡성
+#  - type_body_length                       # 타입 본문의 행 길이 제한
+#  - file_length                            # 파일 줄 길이 제한
+#  - unused_optional_binding                # 사용되지 않는 옵셔널 바인딩 제한
+#  - function_parameter_count               # 파라미터 갯수 제한
+#  - function_body_length                   # 함수 본문의 행 길이 제한
+#  - large_tuple                            # 튜플 인자 수 제한
+#  - unused_control_flow_label              # 미사용 제어 플로우 제거
+#  - trailing_comma                         # 배열 및 딕셔너리에서 후행 쉼표 조건 (적용 혹은 미적용)
+#  - opening_brace                          # 중괄호 선언 조건 (중괄호 앞 단일 공백 및 선언과 같은 행)
+#  - closure_parameter_position             # 클로저 매개변수 위치 (중괄호와 같은 행)
+#  - for_where                              # for where 절 선호 (for 문 내 if 사용 대체)
+#  - inclusive_language                     # 포괄적 언어 사용 (인종, 성별, 사회경제적 지위를 나타내는 언어 사용금지)
+#  - statement_position                     # 구문 위치 제한 (else, catch 등이 선언 바로 뒤 한칸 공백 후 위치함) - 선택 필요
+#  - todo                                   # TODO, FIXME 주석 제한
+#
+## 옵트 인 룰
+#opt_in_rules:
+#  - indentation_width                      # 인덴트 룰 적용
+#  - closure_end_indentation                # 클로저의 끝 괄호를 시작한 행과의 들여쓰기 맞춤
+#  - empty_count                            # count보다 isEmpty 선호
+#  - empty_string                           # == ""보다 isEmpty 선호
+#  - sorted_imports                         # import 시 알파벳 순 정렬
+#  - used_import                            # 사용되지 않는 모듈 import 알림
+#
+## 인덴트 커스텀 정의
+#indentation_width:
+#  indentation_width: 4                     # 들여쓰기 4칸(Tab)
+#  include_comments: false
+#
+## 타입 네이밍 커스텀 정의
+#type_name:
+#  min_length:
+#    warning: 1
+#  max_length:
+#    warning: 120
+#  allowed_symbols:
+#    - _
+#
+## 식별자 네이밍 커스텀 정의
+#identifier_name:
+#  min_length:
+#    warning: 0
+#    error: 0
+#  max_length:
+#    warning: 120
+#    error: 120
+#  allowed_symbols:
+#    - $
+#    - _
+#
+## 콜론 커스텀 정의
+#colon:
+#  apply_to_dictionaries: false             # 딕셔너리에서 콜론이 키 옆에 있어야 하는 룰 미적용
+#
+## 행 길이 커스텀 정의
+#line_length:
+#  ignores_urls: true                       # URL에 대해 행 길이 제한 미적용
+#  ignores_comments: true                   # 코멘트에 대해 행 길이 제한 미적용
+#  ignores_interpolated_strings: true       # 보간된 문자열 행 길이 제한 미적용
+#
+## 룰 적용 제외할 파일
+#excluded:
+#  - Pods
+#  - LintTest/AppDelegate.swift
+#  - LintTest/SceneDelegate.swift

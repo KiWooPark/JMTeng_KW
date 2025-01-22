@@ -12,7 +12,7 @@ protocol GroupCoordinator: Coordinator {
     func showCreateGroupPage()
     func setSearchRestaurantCoordinator()
     func showSearchRestaurantViewController()
-    
+    func goToHomeViewController()
 }
 
 class DefaultGroupCoordinator: GroupCoordinator {
@@ -27,9 +27,9 @@ class DefaultGroupCoordinator: GroupCoordinator {
         self.navigationController = navigationController
         self.parentCoordinator = parentCoordinator
     }
-    
+
     func start() {
-        let groupWebViewController = GroupWebViewController.instantiateFromStoryboard(storyboardName: "Group") as GroupWebViewController
+        guard let groupWebViewController = GroupWebViewController.instantiateFromStoryboard(storyboardName: "Group") as? GroupWebViewController else { return }
         groupWebViewController.viewModel?.coordinator = self
         self.navigationController?.pushViewController(groupWebViewController, animated: false)
     }
@@ -59,17 +59,27 @@ class DefaultGroupCoordinator: GroupCoordinator {
     }
     
     func setSearchRestaurantCoordinator() {
-        let coordinator = DefaultSearchRestaurantCoordinator(navigationController: navigationController, parentCoordinator: self, finishDelegate: self)
-        childCoordinators.append(coordinator)
+        let coordinator = DefaultSearchRestaurantCoordinator(navigationController: navigationController,
+                                                             parentCoordinator: self,
+                                                             finishDelegate: self)
+        self.childCoordinators.append(coordinator)
     }
     
     func showSearchRestaurantViewController() {
-        if getChildCoordinator(.searchRestaurant) == nil {
-            setSearchRestaurantCoordinator()
+        if self.getChildCoordinator(.searchRestaurant) == nil {
+            self.setSearchRestaurantCoordinator()
         }
         
-        let coordinator = getChildCoordinator(.searchRestaurant) as! SearchRestaurantCoordinator
-        coordinator.start()
+        if let coordinator = getChildCoordinator(.searchRestaurant) as? SearchRestaurantCoordinator {
+            coordinator.start()
+        }
+    }
+    
+    func goToHomeViewController() {
+        if let homeViewController = parentCoordinator?.childCoordinators[0].navigationController?.viewControllers[0] as? HomeViewController {
+            self.navigationController?.tabBarController?.selectedIndex = 0
+            homeViewController.updateViewBasedOnGroupStatus()
+        }
     }
     
     func getChildCoordinator(_ type: CoordinatorType) -> Coordinator? {
@@ -77,7 +87,7 @@ class DefaultGroupCoordinator: GroupCoordinator {
         
         switch type {
         case .searchRestaurant:
-            childCoordinator = childCoordinators.first(where: { $0 is SearchRestaurantCoordinator })
+            childCoordinator = self.childCoordinators.first(where: { $0 is SearchRestaurantCoordinator })
         default:
             break
         }
@@ -88,6 +98,6 @@ class DefaultGroupCoordinator: GroupCoordinator {
 
 extension DefaultGroupCoordinator: CoordinatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: Coordinator) {
-        self.childCoordinators = self.childCoordinators.filter{ $0.type != childCoordinator.type }
+        self.childCoordinators = self.childCoordinators.filter { $0.type != childCoordinator.type }
     }
 }

@@ -11,7 +11,5 @@ import Foundation
 
 class MyPageChangeNickNameViewModel {
     weak var coordinator: MyPageChangeNicknaemCoordinator?
-    
-    
     let test = "홈"
 }

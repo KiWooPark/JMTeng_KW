@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import UIKit
 import Kingfisher
+import UIKit
 
 class RegistrationRestaurantInfoViewModel {
     
@@ -42,7 +42,7 @@ class RegistrationRestaurantInfoViewModel {
     var didCompletedDrinkingComment: (() -> Void)?
     var didCompletedTags: ((Bool) -> Void)?
     var didCompletedDeleteTag: (() -> Void)?
-    var didCompletedCheckInfo: ((checkInfoType) -> Void)?
+    var didCompletedCheckInfo: ((CheckInfoType) -> Void)?
     
     // MARK: - Initialization
     // 뷰모델 초기화와 관련된 로직을 담당하는 부분입니다.
@@ -85,19 +85,18 @@ class RegistrationRestaurantInfoViewModel {
         do {
             if let info = self.info, let selectedGroupId = self.selectedGroupId {
                 
-                let categoryId = categoryData.firstIndex(where: {$0.1 == true }).map({Int($0)}) ?? 0
+                let categoryId = categoryData.firstIndex(where: { $0.1 == true }).map({ Int($0) }) ?? 0
                 
                 let recommendMenu = tags.joined()
                             
-                let request = CreateRestaurantRequest(
-                    name: info.placeName,
-                    introduce: commentString,
-                    categoryId: categoryId + 1,
-                    canDrinkLiquor: isDrinking,
-                    goWellWithLiquor: drinkingComment,
-                    recommendMenu: recommendMenu,
-                    restaurantLocationId: self.restaurantLocationId ?? 0,
-                    groupId: selectedGroupId)
+                let request = CreateRestaurantRequest(name: info.placeName,
+                                                      introduce: commentString,
+                                                      categoryId: categoryId + 1,
+                                                      canDrinkLiquor: isDrinking,
+                                                      goWellWithLiquor: drinkingComment,
+                                                      recommendMenu: recommendMenu,
+                                                      restaurantLocationId: self.restaurantLocationId ?? 0,
+                                                      groupId: selectedGroupId)
  
                 let response = try await CreateRestaurantsAPI.createRestaurantAsync(request: request, images: selectedImages)
                 recommendRestaurantId = response.data.recommendRestaurantId
@@ -111,22 +110,22 @@ class RegistrationRestaurantInfoViewModel {
     }
     
     func updateEditRestaurantInfo() async throws {
-        let categoryId = categoryData.firstIndex(where: {$0.1 == true}) ?? 0
+        let categoryId = categoryData.firstIndex(where: { $0.1 == true }) ?? 0
         let request = EditRestaurantRequest(id: recommendRestaurantId ?? -1,
-                                                introduce: commentString,
-                                                categoryId: categoryId + 1,
-                                                canDrinkLiquor: isDrinking,
-                                                goWellWithLiquor: drinkingComment,
-                                                recommendMenu: tags.joined())
+                                            introduce: commentString,
+                                            categoryId: categoryId + 1,
+                                            canDrinkLiquor: isDrinking,
+                                            goWellWithLiquor: drinkingComment,
+                                            recommendMenu: tags.joined())
         try await UpdateRestaurantsAPI.editRestaurant(request: request)
     }
     
     // MARK: - Utility Methods
     // 다양한 유틸리티 메소드들을 모아두는 부분입니다. 예를 들어, 날짜 포매팅이나 데이터 검증 등입니다.
     
-    func setupEditData(completion: @escaping () -> ()) {
+    func setupEditData(completion: @escaping () -> Void) {
         // 카테고리 데이터 설정
-        let categoryIndex = categoryData.firstIndex(where: { $0.0 == editData?.category})
+        let categoryIndex = categoryData.firstIndex(where: { $0.0 == editData?.category })
         updateSelectedCategory(row: categoryIndex ?? 0)
         isSelectedCategory = true
         
@@ -137,7 +136,7 @@ class RegistrationRestaurantInfoViewModel {
         
         selectedImages = Array<UIImage?>(repeating: nil, count: editData?.pictures.count ?? 0)
         
-        editData?.pictures.enumerated().forEach { (index, imageUrl) in
+        editData?.pictures.enumerated().forEach { index, imageUrl in
             
             if let url = URL(string: imageUrl) {
                 
@@ -159,13 +158,13 @@ class RegistrationRestaurantInfoViewModel {
                                 case .success(let value):
                                     self.selectedImages[index] = value.image
                                     group.leave()
-                                case .failure(_):
+                                case .failure:
                                     print("이미지 다운로드 실패 2")
                                     group.leave()
                                 }
                             }
                         }
-                    case .failure(_):
+                    case .failure:
                         print("이미지 가져오기 실패 1")
                         group.leave()
                     }
@@ -191,11 +190,11 @@ class RegistrationRestaurantInfoViewModel {
         drinkingComment = editData?.canDrinkLiquor == true ? editData?.goWellWithLiquor ?? "" : ""
         
         // 태그 설정
-        tags =  editData?.recommendMenu ?? []
+        tags = editData?.recommendMenu ?? []
     }
     
     func updateSelectedCategory(row: Int) {
-        for (index, _) in categoryData.enumerated() {
+        for index in categoryData.indices {
             if index == row {
                 categoryData[index].1 = true
             } else {
@@ -269,13 +268,15 @@ extension RegistrationRestaurantInfoViewModel {
     func normalizeHashTags(in text: String) -> String {
         var normalizedText = text
         // 연속된 '#' 패턴을 찾기 위한 정규 표현식
-        let regex = try! NSRegularExpression(pattern: "#+", options: [])
+        if let regex = try? NSRegularExpression(pattern: "#+", options: []) {
+            // 모든 연속된 '#'을 하나의 '#'으로 변경
+            let range = NSRange(location: 0, length: normalizedText.utf16.count)
+            normalizedText = regex.stringByReplacingMatches(in: normalizedText, options: [], range: range, withTemplate: "#")
+            
+            return normalizedText
+        }
         
-        // 모든 연속된 '#'을 하나의 '#'으로 변경
-        let range = NSRange(location: 0, length: normalizedText.utf16.count)
-        normalizedText = regex.stringByReplacingMatches(in: normalizedText, options: [], range: range, withTemplate: "#")
-        
-        return normalizedText
+        return ""
     }
     
     func splitString(in text: String) -> [String] {
@@ -306,7 +307,7 @@ extension RegistrationRestaurantInfoViewModel {
 // 미입력 정보 체크
 extension RegistrationRestaurantInfoViewModel {
     
-    enum checkInfoType {
+    enum CheckInfoType {
         case category
         case commentString
         case drinkingComment
@@ -320,13 +321,13 @@ extension RegistrationRestaurantInfoViewModel {
             return false
         }
         
-        if commentString == "" {
+        if commentString.isEmpty {
             didCompletedCheckInfo?(.commentString)
             return false
         }
         
         if isDrinking == true {
-            if drinkingComment == "" {
+            if drinkingComment.isEmpty {
                 didCompletedCheckInfo?(.drinkingComment)
                 return false
             }

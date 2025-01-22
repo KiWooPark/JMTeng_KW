@@ -31,5 +31,3 @@ class HomeBottomSheetFloatingPanelLayout: FloatingPanelLayout {
         return 0.0
     }
 }
-
-

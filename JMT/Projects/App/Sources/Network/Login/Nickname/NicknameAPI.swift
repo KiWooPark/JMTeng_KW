@@ -5,11 +5,11 @@
 //  Created by PKW on 2024/01/03.
 //
 
-import Foundation
 import Alamofire
+import Foundation
 
 struct NicknameAPI {
-    static func checkDuplicate(request: NicknameRequest, completion: @escaping (Result<String, NetworkError>) -> ()) {
+    static func checkDuplicate(request: NicknameRequest, completion: @escaping (Result<String, NetworkError>) -> Void) {
         
         AF.request(NicknameTarget.checkDuplicate(request))
             .validate(statusCode: 200..<500)
@@ -24,7 +24,7 @@ struct NicknameAPI {
             }
     }
     
-    static func saveNickname(request: NicknameRequest, completion: @escaping (Result<String, NetworkError>) -> ()) {
+    static func saveNickname(request: NicknameRequest, completion: @escaping (Result<String, NetworkError>) -> Void) {
         AF.request(NicknameTarget.saveNickname(request), interceptor: DefaultRequestInterceptor())
             .validate(statusCode: 200..<300)
             .responseDecodable(of: NicknameResponse<NicknameData>.self) { response in
@@ -34,6 +34,7 @@ struct NicknameAPI {
                     completion(.success(response.code))
                 case .failure(let error):
                     print("saveNickname 실패!!", error)
+                    completion(.failure(.custom("닉네임 저장 실패")))
                 }
             }
     }

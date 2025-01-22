@@ -19,12 +19,6 @@ class FilterCell: UITableViewCell {
         self.contentView.layer.borderColor = JMTengAsset.gray100.color.cgColor
         self.contentView.layer.borderWidth = 2
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -41,8 +35,8 @@ class FilterCell: UITableViewCell {
         let menuOptions: [(text: String, isHideImage: Bool, image: UIImage?)] = {
             switch viewModel?.sortType {
             case .sort:
-                return [("가까운 순", true, nil),
-                        ("최신 순", true, nil)]
+                return [("최신 순", true, nil),
+                        ("등록 순", true, nil)]
             case .category:
                 return [("한식", false, JMTengAsset.category1.image),
                         ("일식", false, JMTengAsset.category2.image),

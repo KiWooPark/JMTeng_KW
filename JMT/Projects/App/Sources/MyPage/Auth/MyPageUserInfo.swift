@@ -5,8 +5,8 @@
 //  Created by 이지훈 on 2/22/24.
 //
 
-import Foundation
 import Alamofire
+import Foundation
 
 class MyPageUserInfo {
     
@@ -35,4 +35,3 @@ class MyPageUserInfo {
         task.resume()
     }
 }
-

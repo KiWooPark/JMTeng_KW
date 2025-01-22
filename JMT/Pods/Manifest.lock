@@ -16,11 +16,13 @@ PODS:
   - NMapsGeometry (1.0.1)
   - NMapsMap (3.17.0):
     - NMapsGeometry
+  - SwiftLint (0.55.0)
   - Toast-Swift (5.1.0)
 
 DEPENDENCIES:
   - GoogleSignIn
   - NMapsMap
+  - SwiftLint
   - Toast-Swift (~> 5.1.0)
 
 SPEC REPOS:
@@ -31,6 +33,7 @@ SPEC REPOS:
     - GTMSessionFetcher
     - NMapsGeometry
     - NMapsMap
+    - SwiftLint
     - Toast-Swift
 
 SPEC CHECKSUMS:
@@ -40,8 +43,9 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 8a1b34ad97ebe6f909fb8b9b77fba99943007556
   NMapsGeometry: 53c573ead66466681cf123f99f698dc8071a4b83
   NMapsMap: a5b909a31b6f3d27a670f6eb2ddc913c38975474
+  SwiftLint: c5b49076d727b772434318c236548f0a1110c299
   Toast-Swift: dd369e68ee529f542c65bd0d0c6c50cd743cf6f2
 
-PODFILE CHECKSUM: 6c31937f19aee61ff850165bc5d63b195fea3556
+PODFILE CHECKSUM: b88e5f6bf8ec22701413f4c6d4659f06819a6d42
 
 COCOAPODS: 1.15.2

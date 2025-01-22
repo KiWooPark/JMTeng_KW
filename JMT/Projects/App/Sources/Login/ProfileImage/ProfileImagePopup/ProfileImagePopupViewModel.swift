@@ -9,5 +9,4 @@ import Foundation
 
 struct ProfileImagePopupViewModel {
     weak var coordinator: ProfileImagePopupCoordinator?
-    
 }

@@ -22,6 +22,6 @@ struct NicknameRegister: Codable {
 }
 
 // MARK: - DataClass
-struct NicknameClass : Codable {
+struct NicknameClass: Codable {
     let email, nickname: String?
 }

@@ -13,4 +13,5 @@ target 'JMTeng' do
   pod 'NMapsMap'
   pod 'GoogleSignIn'
   pod 'Toast-Swift', '~> 5.1.0'
+  pod 'SwiftLint'
 end

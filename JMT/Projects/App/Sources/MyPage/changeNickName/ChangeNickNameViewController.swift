@@ -5,14 +5,13 @@
 //  Created by 이지훈 on 2/29/24.
 //
 
-import UIKit
 import Alamofire
+import UIKit
 
 class ChangeNickNameVC: UIViewController {
     
     var viewModel: MyPageChangeNickNameViewModel?
-    
-    
+
     @IBOutlet weak var userName: UILabel!
     @IBOutlet weak var updateTF: UITextField!
     
@@ -23,12 +22,8 @@ class ChangeNickNameVC: UIViewController {
     
     @IBOutlet weak var bottomConstrain: NSLayoutConstraint!
     
-    @IBOutlet weak var BoolImage: UIImageView!
-    @IBOutlet weak var btnView: UIView!
-    
-    
-    
-    
+    @IBOutlet weak var boolImage: UIImageView!
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -36,16 +31,17 @@ class ChangeNickNameVC: UIViewController {
         setCustomNavigationBarBackButton(goToViewController: .popVC)
     }
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let border = CALayer()
         let width = CGFloat(0.5)
         
-        
         border.borderColor = UIColor(named: "gray400")?.cgColor
-        border.frame = CGRect(x: 0, y: updateTF.frame.size.height - width, width: updateTF.frame.size.width, height: updateTF.frame.size.height)
+        border.frame = CGRect(x: 0, 
+                              y: updateTF.frame.size.height - width,
+                              width: updateTF.frame.size.width,
+                              height: updateTF.frame.size.height)
         
         border.borderWidth = width
         
@@ -54,20 +50,28 @@ class ChangeNickNameVC: UIViewController {
         
         let safeArea = self.view.safeAreaLayoutGuide
         
-        
-        //키보드 올렷다 내리기
-        self.bottomConstrain = NSLayoutConstraint(item: self.buttonView, attribute: .bottom, relatedBy: .equal, toItem: safeArea, attribute: .bottom, multiplier: 1.0, constant: 0)
+        // 키보드 올렷다 내리기
+        self.bottomConstrain = NSLayoutConstraint(item: self.buttonView,
+                                                  attribute: .bottom,
+                                                  relatedBy: .equal,
+                                                  toItem: safeArea,
+                                                  attribute: .bottom,
+                                                  multiplier: 1.0, 
+                                                  constant: 0)
         self.bottomConstrain?.isActive = true
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillShow),
+                                               name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, 
+                                               selector: #selector(keyboardWillHide),
+                                               name: UIResponder.keyboardWillHideNotification, object: nil)
         
         updateTF.addTarget(self, action: #selector(textFieldEditingChanged), for: .editingChanged)
         
         updateTF.delegate = self
         
-        userName.textColor =  UIColor(red: 0.489, green: 0.565, blue: 0.611, alpha: 1)
-        
+        userName.textColor = UIColor(red: 0.489, green: 0.565, blue: 0.611, alpha: 1)
         
         buttonView.layer.cornerRadius = 12
         nextBtn.layer.cornerRadius = 12
@@ -77,7 +81,6 @@ class ChangeNickNameVC: UIViewController {
         navigationItems()
     }
     
-    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -85,7 +88,6 @@ class ChangeNickNameVC: UIViewController {
         
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
-        
     }
     
     // MARK: - 네비게이션
@@ -104,11 +106,10 @@ class ChangeNickNameVC: UIViewController {
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: leftButton)
     }
     
-    @objc func yourSelector1() {
+    @objc 
+    func yourSelector1() {
         self.navigationController?.popViewController(animated: true)
     }
-    
-    
     
     func sendNicknameToServer(nickname: String, token: String, completion: @escaping (Bool) -> Void) {
         let url = URL(string: "https://api.jmt-matzip.dev/api/v1/user/nickname")!
@@ -168,25 +169,22 @@ class ChangeNickNameVC: UIViewController {
     @IBAction func updateNickname(_ sender: Any) {
         
         guard let newNickname = updateTF.text, !newNickname.isEmpty else {
-                print("No new nickname provided.")
-                return
-            }
-            
-            let keychainAccess = DefaultKeychainAccessible()
-            if let accessToken = keychainAccess.getToken("accessToken") {
-                // 서버에 닉네임 전송
-                sendNicknameToServer(nickname: newNickname, token: accessToken) { [weak self] success in
-                    if success {
-                        // 닉네임 업데이트 성공 처리
-                        self?.handleNicknameUpdateSuccess(nickname: newNickname)
-                    } else {
-                        // 닉네임 업데이트 실패 처리
-                        self?.handleNicknameUpdateFailure()
-                    }
+            print("No new nickname provided.")
+            return
+        }
+    
+        let keychainAccess = DefaultKeychainService.shared
+        
+        if let accessToken = keychainAccess.getValue(for: KeychainKey.accessToken, type: String.self) {
+            sendNicknameToServer(nickname: newNickname, token: accessToken) { [weak self] success in
+                guard let self = self else { return }
+                if success {
+                    self.handleNicknameUpdateSuccess(nickname: newNickname)
+                } else {
+                    self.handleNicknameUpdateFailure()
                 }
-            } else {
-                print("Access Token is not available")
             }
+        }
     }
     
     
@@ -198,7 +196,7 @@ class ChangeNickNameVC: UIViewController {
         toastContainer.layer.shadowOpacity = 1
         toastContainer.layer.shadowRadius = 16
         toastContainer.layer.shadowOffset = CGSize(width: 0, height: 2)
-        toastContainer.center = CGPoint(x: self.view.frame.size.width/2, y: self.view.frame.size.height-100) // 화면 하단 중앙에 위치
+        toastContainer.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height - 100) // 화면 하단 중앙에 위치
         self.view.addSubview(toastContainer)
 
         let checkImageView = UIImageView(image: UIImage(named: "CheckMark")) // 이미지 이름 확인 필요
@@ -247,18 +245,14 @@ class ChangeNickNameVC: UIViewController {
         }
     }
 
-    @objc func showNicknameUpdateSuccessToast() {
+    @objc 
+    func showNicknameUpdateSuccessToast() {
         showToastWithCustomLayout(message: "닉네임이 성공적으로 변경되었습니다.", duration: 2.0)
     }
-
-    
-    
     
     func handleNicknameUpdateFailure() {
         print("Nickname update failed!")
     }
-    
-    
     
     private func updateNicknameInProfileViewController(nickname: String) {
         if let profileVC = navigationController?.viewControllers.first(where: { $0 is DetailMyPageVC }) as? DetailMyPageVC {
@@ -268,9 +262,7 @@ class ChangeNickNameVC: UIViewController {
 }
 
 extension ChangeNickNameVC: UITextFieldDelegate {
-    
-    
-    //MARK: 유효성 검사
+    // MARK: 유효성 검사
     func validateInput(_ input: String) -> Bool {
         if input.count > 10 {
             return false
@@ -289,7 +281,8 @@ extension ChangeNickNameVC: UITextFieldDelegate {
     }
     
     // MARK: - 이메일텍스트필드, 비밀번호 텍스트필드 두가지 다 채워져 있을때 색 변경
-    @objc private func textFieldEditingChanged(_ textField: UITextField) {
+    @objc 
+    private func textFieldEditingChanged(_ textField: UITextField) {
         print("textFieldEditingChanged called")
         
         if textField.text?.count == 1 {
@@ -303,7 +296,7 @@ extension ChangeNickNameVC: UITextFieldDelegate {
             nextBtn.backgroundColor = UIColor(named: "main200")
             nextBtn.isEnabled = false
             vaildation.isHidden = true // 입력이 없으면 Validation 숨기기
-            BoolImage.isHidden = true // 입력이 없으면 vaildImage 숨기기
+            boolImage.isHidden = true // 입력이 없으면 vaildImage 숨기기
             
             return
         }
@@ -316,7 +309,7 @@ extension ChangeNickNameVC: UITextFieldDelegate {
                     self.vaildation.textColor = UIColor(red: 1, green: 0.14, blue: 0.35, alpha: 1)
                     self.nextBtn.backgroundColor = UIColor(named: "main200")
                     self.nextBtn.isEnabled = false
-                    self.BoolImage.image = UIImage(named: "Xmark")
+                    self.boolImage.image = UIImage(named: "Xmark")
                 } else {
                     // 입력값이 유효한지 검사
                     let isValid = self.validateInput(nickname)
@@ -330,10 +323,10 @@ extension ChangeNickNameVC: UITextFieldDelegate {
                     self.nextBtn.isEnabled = isValid
                     
                     // vaildImage에 이미지 설정
-                    self.BoolImage.image = isValid ? UIImage(named: "CheckMark") : UIImage(named: "Xmark")
+                    self.boolImage.image = isValid ? UIImage(named: "CheckMark") : UIImage(named: "Xmark")
                     
                     
-                    if let image = UIImage(named: "Xmark") {
+                    if UIImage(named: "Xmark") != nil {
                         print("Image loaded successfully")
                     } else {
                         print("Failed to load the image")
@@ -357,13 +350,14 @@ extension ChangeNickNameVC: UITextFieldDelegate {
         nextBtn.isEnabled = isValid
         
         // vaildImage에 이미지 설정
-        BoolImage.image = isValid ? UIImage(named: "CheckMark") : UIImage(named: "Xmark")
-        BoolImage.isHidden = false
+        boolImage.image = isValid ? UIImage(named: "CheckMark") : UIImage(named: "Xmark")
+        boolImage.isHidden = false
     }
     
     
     
-    @objc private func keyboardWillShow(notification: NSNotification) {
+    @objc 
+    private func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             let keyboardHeight: CGFloat = keyboardSize.height
             
@@ -377,7 +371,8 @@ extension ChangeNickNameVC: UITextFieldDelegate {
         }
     }
     
-    @objc private func keyboardWillHide(notification: NSNotification) {
+    @objc 
+    private func keyboardWillHide(notification: NSNotification) {
         // 키보드가 사라질 때 bottomConstrain의 constant 값을 0으로 설정하여 원래 위치로 돌아가게 합니다.
         self.bottomConstrain.constant = 0
         
@@ -386,10 +381,6 @@ extension ChangeNickNameVC: UITextFieldDelegate {
             self.view.layoutIfNeeded()
         }
     }
-    
-    
-    
-    
 }
 
 extension UITextField {
@@ -426,4 +417,3 @@ extension UITextField {
         sendActions(for: .editingChanged)
     }
 }
-

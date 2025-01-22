@@ -5,11 +5,11 @@
 //  Created by PKW on 2024/01/16.
 //
 
-import Foundation
 import Alamofire
+import Foundation
 
 struct ProfileImageAPI {
-    static func saveProfileImage(request: ProfileImageReqeust, completion: @escaping (Result<ProfileImageModel,NetworkError>) -> ()) {
+    static func saveProfileImage(request: ProfileImageReqeust, completion: @escaping (Result<ProfileImageModel,NetworkError>) -> Void) {
     
         AF.upload(multipartFormData: { formData in
             if let imageData = Data(base64Encoded: request.imageStr) {
@@ -28,7 +28,7 @@ struct ProfileImageAPI {
         }
     }
     
-    static func saveDefaultProfileImage(completion: @escaping (Result<ProfileImageModel, NetworkError>) -> ()) {
+    static func saveDefaultProfileImage(completion: @escaping (Result<ProfileImageModel, NetworkError>) -> Void) {
         AF.request(ProfileImageTarget.saveDefaultProfileImage, interceptor: DefaultRequestInterceptor())
             .validate(statusCode: 200..<300)
             .responseDecodable(of: ProfileImageResponse.self, completionHandler: { response in

@@ -15,7 +15,8 @@ class SearchViewModel {
     var currentSegIndex: Int = 0
     var isEmptyGroup: Bool?
     
-    var restaurants = [SearchRestaurantsItems]()
+//    var restaurants = [SearchRestaurantsItems]()
+    var restaurants = [SearchRestaurantsModel]()
     var groupList = [SearchGroupItems]()
     var outBoundrestaurants = [OutBoundRestaurantsModel]()
     
@@ -29,13 +30,17 @@ class SearchViewModel {
             let x = locationManager.coordinate?.longitude ?? 0.0
             let y = locationManager.coordinate?.latitude ?? 0.0
             
-            let response = try await ReadRestaurantsAPI.searchRestaurantsAsync(request: SearchRestaurantsRequest(keyword: keyword,
-                                                                                                             x: "\(x)",
-                                                                                                             y: "\(y)"))
-            restaurants = response.data.restaurants
+            let response = try await ReadRestaurantsAPI.searchRestaurantsAsync(
+                request: SearchRestaurantsRequest(
+                    keyword: keyword,
+                    x: "\(x)",
+                    y: "\(y)"
+                )
+            )
+            
+            restaurants = response.toDomain
         } catch {
-            print(error)
-            throw RestaurantError.fetchRestaurantsAsyncError
+            throw error
         }
     }
     
@@ -44,26 +49,32 @@ class SearchViewModel {
         do {
             groupList.removeAll()
             
-            let response = try await ReadGroupAPI.fetchGroups(request: SearchGroupRequest(keyword: keyword))
+            let response = try await ReadGroupAPI.fetchGroups(
+                request: SearchGroupRequest(
+                    keyword: keyword)
+            )
+            
             groupList = response.data.groupList
         } catch {
-            print(error)
-            throw RestaurantError.fetchGroupsAsyncError
+            throw error
         }
     }
 
     // 다른 그룹 맛집 데이터 검색하기
     func fetchOutBoundRestaurantsAsync(keyword: String) async throws {
-        
         do {
             outBoundrestaurants.removeAll()
             
-            let response = try await ReadRestaurantsAPI.fetchOutBoundRestaurantsAsync(request: OutBoundRestaurantsRequest(keyword: keyword,
-                                                                                                                      currentGroupId: -1))
+            let response = try await ReadRestaurantsAPI.fetchOutBoundRestaurantsAsync(
+                request: OutBoundRestaurantsRequest(
+                    keyword: keyword,
+                    currentGroupId: -1
+                )
+            )
+            
             outBoundrestaurants = response.toDomain
         } catch {
-            print(error)
-            throw RestaurantError.fetchOutBoundRestaurantsAsyncError
+            throw error
         }
     }
 }

@@ -5,8 +5,8 @@
 //  Created by PKW on 2024/02/04.
 //
 
-import UIKit
 import NMapsMap
+import UIKit
 
 class SearchRestaurantMapViewController: UIViewController {
     
@@ -56,9 +56,8 @@ class SearchRestaurantMapViewController: UIViewController {
     func checkRegistrationRestaurant() {
         
         Task {
-            let isRegistration = await viewModel?.checkRegistrationRestaurant()
-            
-            if isRegistration == false {
+            if await viewModel?.checkRegistrationRestaurant() == false {
+                self.registeredRestaurantView.isHidden = false
                 self.selectedBottomView.isHidden = true
             } else {
                 self.registeredRestaurantView.isHidden = true

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -164,7 +164,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="사용자 이름 수정" style="editor" id="S6a-UX-xRA"/>
                     <connections>
-                        <outlet property="BoolImage" destination="gPv-HH-uBB" id="wyo-Yh-CCb"/>
+                        <outlet property="boolImage" destination="gPv-HH-uBB" id="fqY-RH-Pjo"/>
                         <outlet property="bottomConstrain" destination="FeB-rU-mp3" id="dWl-1L-9pS"/>
                         <outlet property="buttonView" destination="qAS-jw-G21" id="igf-TA-8yB"/>
                         <outlet property="nextBtn" destination="Ji0-SG-kpY" id="r4Y-t8-omN"/>

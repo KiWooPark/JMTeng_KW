@@ -5,8 +5,8 @@
 //  Created by PKW on 3/7/24.
 //
 
-import Foundation
 import FloatingPanel
+import Foundation
 
 class CategoryFloatingPanelLayout: FloatingPanelLayout {
     

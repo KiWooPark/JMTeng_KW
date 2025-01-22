@@ -37,4 +37,3 @@ struct SearchGroupPage: Decodable {
     let pageFirst: Bool
     let pageLast: Bool
 }
-

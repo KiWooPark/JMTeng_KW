@@ -19,6 +19,3 @@ struct RestaurantListRequestBody: Encodable {
     let filter: FilterRequest?
     let groupId: Int
 }
-
-
-

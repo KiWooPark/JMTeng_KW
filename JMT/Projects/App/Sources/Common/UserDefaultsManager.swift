@@ -13,6 +13,7 @@ struct UserDefaultManager {
     struct Keys {
         static let hasBeenLaunchedBeforeFlag = "hasBeenLaunchedBeforeFlag"
         static let isJoinGroup = "isJoinGroup"
+        static let userInfo = "userInfo"
         static let selectedGroupId = "selectedGroupId"
         static let webViewSelectedGroupId = "webViewSelectedGroupId"
         static let recenLocationKeywords = "recenLocationKeywords"
@@ -29,6 +30,27 @@ struct UserDefaultManager {
         set { defaults.set(newValue, forKey: Keys.isJoinGroup) }
     }
     
+    static var userInfo: UserInfoModel? {
+        get {
+            if let userData = defaults.data(forKey: Keys.userInfo) {
+                let decoder = JSONDecoder()
+                if let user = try? decoder.decode(UserInfoModel.self, from: userData) {
+                    return user
+                }
+            }
+            return nil
+        }
+        set {
+            let encoder = JSONEncoder()
+            if let encoded = try? encoder.encode(newValue) {
+                defaults.set(encoded, forKey: Keys.userInfo)
+            } else {
+                defaults.removeObject(forKey: Keys.userInfo)
+            }
+        }
+    }
+    
+   
     static var selectedGroupId: Int? {
         get {
             // 값이 없는 경우 nil 반환
@@ -67,7 +89,8 @@ struct UserDefaultManager {
 }
 
 extension UserDefaultManager {
-    public static func isFirstLaunch() -> Bool {
+    
+    static func isFirstLaunch() -> Bool {
         
         // 맨 처음 가져오면 false
         let isFirstLaunch = !hasBeenLaunchedBeforeFlag
@@ -79,9 +102,6 @@ extension UserDefaultManager {
         
         return isFirstLaunch
     }
-}
-
-extension UserDefaultManager {
     
     static func saveSearchKeyword(_ keyword: String, type: String) {
         let defaults = UserDefaults.standard

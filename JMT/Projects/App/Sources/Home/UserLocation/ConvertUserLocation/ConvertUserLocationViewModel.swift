@@ -11,7 +11,4 @@ class ConvertUserLocationViewModel {
     weak var coordinator: ConvertUserLocationCoordinator?
     
     var locationData: SearchLocationModel?
-    
-
 }
-

@@ -47,4 +47,14 @@ enum RestaurantError: Error {
     case fetchRestaurantDataError
     case fetchRestaurantReviewDataError
     case registrationReviewError
+    
+    case noRestaurantsAvailable // 맛집 데이터 없음
+    case noOtherGroupRestaurantsAvailable // 다른 그룹 맛집 데이터 없음
+    
+    case unknownError
+}
+
+enum GroupError: Error {
+    case noGroupDataAvailable // 그룹 데이터 없음
+    case unknownError
 }

@@ -5,9 +5,9 @@
 //  Created by PKW on 2024/01/23.
 //
 
-import UIKit
-import SkeletonView
 import FloatingPanel
+import SkeletonView
+import UIKit
 
 class HomeBottomSheetViewController: UIViewController {
     
@@ -35,17 +35,69 @@ class HomeBottomSheetViewController: UIViewController {
         let header2 = UINib(nibName: "HomeFilterHeaderView", bundle: nil)
         bottomSheetCollectionView.register(header2, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerView2")
         
-        bottomSheetCollectionView.showAnimatedGradientSkeleton()
+        self.bottomSheetCollectionView.showAnimatedGradientSkeleton()
         self.bottomSheetCollectionView.collectionViewLayout = self.createLayout()
     }
-
-   
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(didUpdateRestaurant), name: .restaurantDidUpdate, object: nil)
+    }
+    
+    @objc 
+    func didUpdateRestaurant(_ notification: Notification) {
+        if let data = notification.userInfo?["restaurantData"] as? EditRestaurantModel {
+            
+            var popularRestaurantSection: IndexPath = IndexPath(item: 0, section: 0)
+            var restaurantSection: IndexPath = IndexPath(item: 0, section: 1)
+            
+            if let popularRestaurantIndex = viewModel?.popularRestaurants.firstIndex(where: { $0.id == data.id }),
+               let originalData = viewModel?.popularRestaurants[popularRestaurantIndex] {
+                
+                viewModel?.popularRestaurants[popularRestaurantIndex] = RestaurantListModel(id: data.id,
+                                                                                            name: originalData.name,
+                                                                                            restaurantImageUrl: originalData.restaurantImageUrl,
+                                                                                            introduce: data.introduce,
+                                                                                            category: data.category,
+                                                                                            x: originalData.x,
+                                                                                            y: originalData.y,
+                                                                                            userNickName: originalData.userNickName,
+                                                                                            userProfileImageUrl: originalData.userProfileImageUrl,
+                                                                                            canDrinkLiquor: data.canDrinkLiquor,
+                                                                                            reviews: [])
+                
+                popularRestaurantSection.item = popularRestaurantIndex
+            }
+            
+            if let restaurantIndex = viewModel?.restaurants.firstIndex(where: { $0.id == data.id }),
+               let originalData = viewModel?.restaurants[restaurantIndex] {
+               
+                viewModel?.restaurants[restaurantIndex] = RestaurantListModel(id: data.id,
+                                                                              name: originalData.name,
+                                                                              restaurantImageUrl: originalData.restaurantImageUrl,
+                                                                              introduce: data.introduce,
+                                                                              category: data.category,
+                                                                              x: originalData.x,
+                                                                              y: originalData.y,
+                                                                              userNickName: originalData.userNickName,
+                                                                              userProfileImageUrl: originalData.userProfileImageUrl,
+                                                                              canDrinkLiquor: data.canDrinkLiquor,
+                                                                              reviews: originalData.reviews)
+               
+                restaurantSection.item = restaurantIndex
+            }
+    
+            DispatchQueue.main.async {
+                self.bottomSheetCollectionView.reloadItems(at: [popularRestaurantSection, restaurantSection])
+            }
+        }
+    }
+
     // MARK: - SetupBindings
     func setupBind() {
         
         viewModel?.didUpdateGroupRestaurantsData = {
-        
             DispatchQueue.main.async {
                 self.viewModel?.isLodingData = true
                 self.bottomSheetCollectionView.showAnimatedGradientSkeleton()
@@ -53,15 +105,19 @@ class HomeBottomSheetViewController: UIViewController {
 //                self.fetchGroupRestaurantData()
             }
         }
+        
+        viewModel?.didScrollToItem = { [weak self] index in
+            DispatchQueue.main.async {
+                self?.bottomSheetCollectionView.scrollToItem(at: IndexPath(row: index, section: 1), at: .top, animated: true)
+            }
+        }
     }
     
     // MARK: - SetupData
     // 선택한 그룹에 포함된 맛집 정보 가져오기
     func fetchGroupRestaurantData2() {
-                
         Task {
             do {
-                
                 try await withThrowingTaskGroup(of: Void.self) { group in
                     group.addTask {
                         try await self.viewModel?.fetchRecentRestaurantsAsync()
@@ -71,32 +127,15 @@ class HomeBottomSheetViewController: UIViewController {
                         try await self.viewModel?.fetchGroupRestaurantsAsync()
                         try await self.viewModel?.fetchRestaurantsReviewsAsync()
                     }
-                    
+                                    
                     try await group.waitForAll()
                     
                     DispatchQueue.main.async {
                         self.viewModel?.isLodingData = false
+                        self.viewModel?.didUpdateMapView?()
                         self.bottomSheetCollectionView.hideSkeleton(reloadDataAfter: true, transition: .crossDissolve(0.5))
                         self.bottomSheetCollectionView.reloadData()
                     }
-                }
-            } catch {
-                print(error)
-            }
-        }
-    }
-    
-    func fetchGroupRestaurantData() {
-        Task {
-            do {
-                try await self.viewModel?.fetchRecentRestaurantsAsync()
-                try await self.viewModel?.fetchGroupRestaurantsAsync()
-                try await self.viewModel?.fetchRestaurantsReviewsAsync()
-                
-                DispatchQueue.main.async {
-                    self.viewModel?.isLodingData = false
-                    self.bottomSheetCollectionView.reloadData()
-                    self.bottomSheetCollectionView.hideSkeleton(reloadDataAfter: true, transition: .crossDissolve(0.5))
                 }
             } catch {
                 print(error)
@@ -172,7 +211,7 @@ class HomeBottomSheetViewController: UIViewController {
       
         let groupSize = NSCollectionLayoutSize(
             widthDimension: .absolute(250), // .fractionalWidth(0.6675),
-            heightDimension: .absolute(240) //.absolute(225) // .fractionalHeight(0.4215)
+            heightDimension: .absolute(240) // .absolute(225) // .fractionalHeight(0.4215)
         )
         
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
@@ -185,7 +224,10 @@ class HomeBottomSheetViewController: UIViewController {
         
         // Header
         section.boundarySupplementaryItems = [
-            NSCollectionLayoutBoundarySupplementaryItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(30)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
+            NSCollectionLayoutBoundarySupplementaryItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
+                                                                                           heightDimension: .absolute(30)),
+                                                        elementKind: UICollectionView.elementKindSectionHeader,
+                                                        alignment: .top)
         ]
 
         return section
@@ -213,7 +255,10 @@ class HomeBottomSheetViewController: UIViewController {
        
         // Header
         section.boundarySupplementaryItems = [
-            NSCollectionLayoutBoundarySupplementaryItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .absolute(26)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
+            NSCollectionLayoutBoundarySupplementaryItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), 
+                                                                                           heightDimension: .absolute(26)),
+                                                        elementKind: UICollectionView.elementKindSectionHeader,
+                                                        alignment: .top)
         ]
 
         return section
@@ -281,10 +326,20 @@ extension HomeBottomSheetViewController: UICollectionViewDelegate {
         case UICollectionView.elementKindSectionHeader:
             switch indexPath.section {
             case 0:
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "headerView1", for: indexPath) as! HomeHeaderView
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, 
+                                                                                   withReuseIdentifier: "headerView1",
+                                                                                   for: indexPath) as? HomeHeaderView else {
+                    return UICollectionReusableView()
+                }
+                
                 return header
             case 1:
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "headerView2", for: indexPath) as! HomeFilterHeaderView
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, 
+                                                                                   withReuseIdentifier: "headerView2",
+                                                                                   for: indexPath) as? HomeFilterHeaderView else {
+                    return UICollectionReusableView()
+                }
+                
                 header.updateFilterButtonTitle(viewModel: viewModel)
                 header.delegate = self
                 return header
@@ -302,13 +357,13 @@ extension HomeBottomSheetViewController: UICollectionViewDelegate {
             guard viewModel?.popularRestaurants.isEmpty == false else { return }
             
             if let info = viewModel?.popularRestaurants[indexPath.row] {
-                viewModel?.coordinator?.showDetailRestaurantViewController(id: viewModel?.popularRestaurants[indexPath.row].id ?? 0)
+                viewModel?.coordinator?.showDetailRestaurantViewController(id: info.id)
             }
         case 1:
             guard viewModel?.restaurants.isEmpty == false else { return }
             
             if let info = viewModel?.restaurants[indexPath.row] {
-                viewModel?.coordinator?.showDetailRestaurantViewController(id: viewModel?.restaurants[indexPath.row].id ?? 0)
+                viewModel?.coordinator?.showDetailRestaurantViewController(id: info.id)
             }
         default:
             return
@@ -332,7 +387,7 @@ extension HomeBottomSheetViewController: UICollectionViewDataSource {
         } else {
             switch section {
             case 0:
-                return viewModel?.restaurants.count ?? 0 >= 10 ? 10 : viewModel?.popularRestaurants.count ?? 0
+                return viewModel?.restaurants.count ?? 0 >= 5 ? 5 : viewModel?.popularRestaurants.count ?? 0
             case 1:
                 return viewModel?.restaurants.isEmpty == true ? 1 : viewModel?.restaurants.count ?? 0
             default:
@@ -379,6 +434,32 @@ extension HomeBottomSheetViewController: UICollectionViewDataSource {
     }
 }
 
+extension HomeBottomSheetViewController: UICollectionViewDataSourcePrefetching {
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+    
+        if indexPaths.contains(where: isLoadingCell) && viewModel?.isFetching == false && viewModel?.hasLoadedInitialData == true {
+            
+            Task {
+                try await viewModel?.fetchGroupRestaurantsAsync()
+                
+                let newIndices = ((viewModel?.previousCount ?? 0)..<(viewModel?.restaurants.count ?? 0)).map { IndexPath(item: $0, section: 1) }
+    
+                DispatchQueue.main.async {
+                    self.bottomSheetCollectionView.performBatchUpdates {
+                        self.bottomSheetCollectionView.insertItems(at: newIndices)
+                    }
+                    self.viewModel?.didUpdateMapView?()
+                }
+            }
+        }
+    }
+ 
+    private func isLoadingCell(for indexPath: IndexPath) -> Bool {
+        guard indexPath.section == 1 else { return false }
+        return indexPath.row >= (viewModel?.restaurants.count ?? 0) - 2
+    }
+}
+
 // MARK: - SkeletonCollectionView DataSource
 extension HomeBottomSheetViewController: SkeletonCollectionViewDataSource {
     
@@ -389,9 +470,9 @@ extension HomeBottomSheetViewController: SkeletonCollectionViewDataSource {
     func collectionSkeletonView(_ skeletonView: UICollectionView, cellIdentifierForItemAt indexPath: IndexPath) -> ReusableCellIdentifier {
         switch indexPath.section {
         case 0:
-            return "firstCell"
+            return "firstSkInfoView"
         case 1:
-            return "skInfoView"
+            return "secondSkInfoView"
         default:
             return ""
         }
@@ -480,10 +561,3 @@ extension HomeBottomSheetViewController {
         self.present(fpc, animated: true)
     }
 }
-
-
-
-
-
-
-

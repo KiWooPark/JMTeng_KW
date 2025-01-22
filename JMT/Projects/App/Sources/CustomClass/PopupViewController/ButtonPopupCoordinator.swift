@@ -8,12 +8,9 @@
 import Foundation
 import UIKit
 
-protocol ButtonPopupCoordinator: Coordinator {
-    
-}
+protocol ButtonPopupCoordinator: Coordinator {}
 
 class DefaultButtonPopupCoordinator: ButtonPopupCoordinator {
-    
     var parentCoordinator: Coordinator?
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController?
@@ -22,7 +19,8 @@ class DefaultButtonPopupCoordinator: ButtonPopupCoordinator {
     
     init(navigationController: UINavigationController?,
          parentCoordinator: Coordinator,
-         finishDelegate: CoordinatorFinishDelegate) {
+         finishDelegate: CoordinatorFinishDelegate)
+    {
         self.navigationController = navigationController
         self.parentCoordinator = parentCoordinator
         self.finishDelegate = finishDelegate
@@ -34,18 +32,17 @@ class DefaultButtonPopupCoordinator: ButtonPopupCoordinator {
         
         setupPopupType(vc: buttonPopupViewController)
         
-        if let topViewController = self.navigationController?.topViewController as? ButtonPopupDelegate {
+        if let topViewController = navigationController?.topViewController as? ButtonPopupDelegate {
             buttonPopupViewController.popupDelegate = topViewController
         }
     
         buttonPopupViewController.modalPresentationStyle = .overFullScreen
-        self.navigationController?.present(buttonPopupViewController, animated: false)
+        navigationController?.present(buttonPopupViewController, animated: false)
     }
     
     func setupPopupType(vc: ButtonPopupViewController) {
-        guard let topViewController = self.navigationController?.topViewController else { return }
-        
-        print(topViewController)
+        guard let topViewController = navigationController?.topViewController else { return }
+
         // 뷰 컨트롤러 분기처리
         switch topViewController {
         case is UserLocationViewController:
@@ -61,4 +58,3 @@ class DefaultButtonPopupCoordinator: ButtonPopupCoordinator {
         }
     }
 }
-

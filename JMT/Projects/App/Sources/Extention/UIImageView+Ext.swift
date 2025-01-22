@@ -28,11 +28,20 @@ extension UIImageView {
                     let retryStrategy = DelayRetryStrategy(maxRetryCount: 2, retryInterval: .seconds(3))
                     self.kf.setImage(with: url, placeholder: placeholder, options: [.retryStrategy(retryStrategy)])
                 }
-            case .failure(_):
+            case .failure:
                 DispatchQueue.main.async {
                     self.image = placeholder
                 }
             }
+        }
+    }
+    
+    // 이미지 로딩을 위한 공통 함수
+    func loadImage(urlString: String?, defaultImage: UIImage) {
+        if let urlString = urlString, !urlString.contains("defaultImg"), let url = URL(string: urlString) {
+            self.kf.setImage(with: url)
+        } else {
+            self.image = defaultImage
         }
     }
 }

@@ -28,16 +28,15 @@ class GroupResultViewController: UIViewController {
         let groupInfoNib = UINib(nibName: "GroupInfoCell", bundle: nil)
         groupCollectionView.register(groupInfoNib, forCellWithReuseIdentifier: "GroupInfoCell")
         
-        NotificationCenter.default.addObserver(self, selector: #selector(handleDataUpdate), name: .didUpdateGroup, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleUpdateData), name: .didUpdateSearchTabData, object: nil)
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-        NotificationCenter.default.removeObserver(self, name: .didUpdateGroup, object: nil)
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: .didUpdateSearchTabData, object: nil)
     }
     
-    @objc func handleDataUpdate() {
+    @objc 
+    func handleUpdateData() {
         DispatchQueue.main.async {
             self.groupCollectionView.reloadData()
         }

@@ -16,5 +16,3 @@ struct DetailRestaurantCoordinate: Encodable {
     let x: String
     let y: String
 }
-
-

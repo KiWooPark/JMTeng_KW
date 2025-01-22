@@ -54,12 +54,12 @@ extension OtherUserRestaurantsResponse {
     var toDomain: OtherUserRestaurantsModel {
         let restaurants = data.restaurants.map { restaurant in
             OtherUserRestaurantsModelItems(id: restaurant.id,
-                                 name: restaurant.name,
-                                 restaurantImageUrl: restaurant.restaurantImageUrl,
-                                 category: restaurant.category,
-                                 userNickName: restaurant.userNickName,
-                                 userProfileImageUrl: restaurant.userProfileImageUrl,
-                                 groupName: restaurant.groupName)
+                                           name: restaurant.name,
+                                           restaurantImageUrl: restaurant.restaurantImageUrl,
+                                           category: restaurant.category,
+                                           userNickName: restaurant.userNickName,
+                                           userProfileImageUrl: restaurant.userProfileImageUrl,
+                                           groupName: restaurant.groupName)
         }
         
         let result = OtherUserRestaurantsModel(items: restaurants, totalCount: data.page.totalElements)

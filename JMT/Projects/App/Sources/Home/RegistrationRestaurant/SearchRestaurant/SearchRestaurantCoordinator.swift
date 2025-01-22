@@ -14,7 +14,6 @@ protocol SearchRestaurantCoordinator: Coordinator {
 }
 
 class DefaultSearchRestaurantCoordinator: SearchRestaurantCoordinator {
-    
     var parentCoordinator: Coordinator?
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController?
@@ -23,16 +22,17 @@ class DefaultSearchRestaurantCoordinator: SearchRestaurantCoordinator {
     
     init(navigationController: UINavigationController?,
          parentCoordinator: Coordinator?,
-         finishDelegate: CoordinatorFinishDelegate?) {
+         finishDelegate: CoordinatorFinishDelegate?)
+    {
         self.navigationController = navigationController
         self.parentCoordinator = parentCoordinator
         self.finishDelegate = finishDelegate
     }
     
     func start() {
-        let searchRestaurantViewController = SearchRestaurantViewController.instantiateFromStoryboard(storyboardName: "SearchRestaurant") as SearchRestaurantViewController
+        guard let searchRestaurantViewController = SearchRestaurantViewController.instantiateFromStoryboard(storyboardName: "SearchRestaurant") as? SearchRestaurantViewController else { return }
         searchRestaurantViewController.viewModel?.coordinator = self
-        self.navigationController?.pushViewController(searchRestaurantViewController, animated: true)
+        navigationController?.pushViewController(searchRestaurantViewController, animated: true)
     }
     
     func setSearchRestaurantMapCoordinator() {
@@ -45,8 +45,9 @@ class DefaultSearchRestaurantCoordinator: SearchRestaurantCoordinator {
             setSearchRestaurantMapCoordinator()
         }
         
-        let coordinator = getChildCoordinator(.searchRestaurantMap) as! SearchRestaurantMapCoordinator
-        coordinator.start(info: info)
+        if let coordinator = getChildCoordinator(.searchRestaurantMap) as? SearchRestaurantMapCoordinator {
+            coordinator.start(info: info)
+        }
     }
     
     func getChildCoordinator(_ type: CoordinatorType) -> Coordinator? {
@@ -64,8 +65,6 @@ class DefaultSearchRestaurantCoordinator: SearchRestaurantCoordinator {
 
 extension DefaultSearchRestaurantCoordinator: CoordinatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: Coordinator) {
-        self.childCoordinators = self.childCoordinators.filter{ $0.type != childCoordinator.type }
+        childCoordinators = childCoordinators.filter { $0.type != childCoordinator.type }
     }
 }
-
-

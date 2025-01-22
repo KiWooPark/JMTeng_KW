@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import UIKit
 import Then
+import UIKit
 
 extension UIView {
     func addShadow(

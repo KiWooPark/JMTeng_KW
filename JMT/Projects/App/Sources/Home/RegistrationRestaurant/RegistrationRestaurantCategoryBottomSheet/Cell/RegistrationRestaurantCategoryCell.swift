@@ -20,11 +20,6 @@ class RegistrationRestaurantCategoryCell: UITableViewCell {
         containerView.layer.borderWidth = 2
         containerView.layer.borderColor = JMTengAsset.gray100.color.cgColor
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-    }
     
     override func prepareForReuse() {
         super.prepareForReuse()

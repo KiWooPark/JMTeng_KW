@@ -357,7 +357,7 @@
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal" title="다음"/>
                                         <connections>
-                                            <action selector="DoneButton:" destination="nxX-fc-2G6" eventType="touchUpInside" id="qaI-pR-wFP"/>
+                                            <action selector="tabNextButton:" destination="nxX-fc-2G6" eventType="touchUpInside" id="eIL-gR-wCi"/>
                                         </connections>
                                     </button>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pnO-0e-00X">
@@ -456,7 +456,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="geo-gE-aig" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1103.0534351145038" y="-31.690140845070424"/>
+            <point key="canvasLocation" x="785" y="-27"/>
         </scene>
     </scenes>
     <resources>

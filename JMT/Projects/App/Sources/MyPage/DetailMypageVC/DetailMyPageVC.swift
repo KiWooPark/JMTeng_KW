@@ -5,24 +5,21 @@
 //  Created by 이지훈 on 1/18/24.
 //
 
-import UIKit
 import Alamofire
+import UIKit
 
-
-class DetailMyPageVC : UIViewController {
+class DetailMyPageVC: UIViewController {
     
     var viewModel: DetailMyPageViewModel?
-    
-    
+
     @IBOutlet weak var userNickname: UILabel!
     @IBOutlet weak var userEmail: UILabel!
     @IBOutlet weak var profileImage: UIImageView!
     @IBOutlet weak var mainTable: UITableView!
     
     let cellName = "ProfileCell"
-    let cellLable: Array<String> = ["계정관리", "서비스 이용동의", "개인정보 처리방식"," "]
+    let cellLable: Array<String> = ["계정관리", "서비스 이용동의", "개인정보 처리방식", " "]
   
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -51,12 +48,14 @@ class DetailMyPageVC : UIViewController {
 
            viewModel?.fetchUserInfo()
         
-        //닉네임 변경 노티
-        NotificationCenter.default.addObserver(self, selector: #selector(showNicknameUpdateSuccessToast), name: NSNotification.Name("NicknameUpdateSuccess"), object: nil)
-        //이미지 변경 노티
-        NotificationCenter.default.addObserver(self, selector: #selector(profileImageUpdated), name: NSNotification.Name("ProfileImageUpdated"), object: nil)
-
-
+        // 닉네임 변경 노티
+        NotificationCenter.default.addObserver(self, selector: #selector(showNicknameUpdateSuccessToast), 
+                                               name: NSNotification.Name("NicknameUpdateSuccess"),
+                                               object: nil)
+        // 이미지 변경 노티
+        NotificationCenter.default.addObserver(self, selector: #selector(profileImageUpdated),
+                                               name: NSNotification.Name("ProfileImageUpdated"),
+                                               object: nil)
     }
     
     
@@ -83,7 +82,6 @@ class DetailMyPageVC : UIViewController {
                     }
                 }
             }
-       
         }
     }
     
@@ -95,7 +93,7 @@ class DetailMyPageVC : UIViewController {
         toastContainer.layer.shadowOpacity = 1
         toastContainer.layer.shadowRadius = 16
         toastContainer.layer.shadowOffset = CGSize(width: 0, height: 2)
-        toastContainer.center = CGPoint(x: self.view.frame.size.width/2, y: self.view.frame.size.height-100) // 화면 하단 중앙에 위치
+        toastContainer.center = CGPoint(x: self.view.frame.size.width / 2, y: self.view.frame.size.height - 100) // 화면 하단 중앙에 위치
         self.view.addSubview(toastContainer)
 
         let checkImageView = UIImageView(image: UIImage(named: "CheckMark")) // 이미지 이름 확인 필요
@@ -133,19 +131,17 @@ class DetailMyPageVC : UIViewController {
         })
     }
     
-    @objc func showNicknameUpdateSuccessToast() {
+    @objc 
+    func showNicknameUpdateSuccessToast() {
         showToastWithCustomLayout(message: "닉네임이 성공적으로 변경되었습니다.", duration: 2.0)
     }
 
-    @objc func profileImageUpdated() {
+    @objc 
+    func profileImageUpdated() {
         // 이미지 변경 성공 토스트 메시지 표시
         showToastWithCustomLayout(message: "프로필 이미지가 성공적으로 변경되었습니다.", duration: 2.0)
         viewModel?.fetchUserInfo()
-
     }
-
-    
-    
     
     func sendDefaultProfileImageToServer() {
         let url = URL(string: "https://api.jmt-matzip.dev/api/v1/user/defaultProfileImg")!
@@ -238,8 +234,6 @@ extension DetailMyPageVC: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true) // 선택한 셀의 하이라이트 제거
         
-        //let storyboard = UIStoryboard(name: "DetailMyPage", bundle: nil) // "Main"은 스토리보드 파일 이름에 따라 변경
-        
         switch indexPath.row {
         case 0:
             viewModel?.coordinator?.showMyPageManageViewController()
@@ -247,11 +241,8 @@ extension DetailMyPageVC: UITableViewDelegate, UITableViewDataSource{
             viewModel?.coordinator?.showMyPageServiceTermsViewController()
         case 2:
             viewModel?.coordinator?.showMyPageServiceUseVC()
-
-        
         default:
             break
         }
     }
 }
-

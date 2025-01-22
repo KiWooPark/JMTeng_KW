@@ -32,7 +32,6 @@ class CustomSegmentedControl: UISegmentedControl {
         
         self.setDividerImage(image, forLeftSegmentState: .selected, rightSegmentState: .normal, barMetrics: .default)
 
-        
         let normalTextAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont(name: "Pretendard-Bold", size: 14),
             .foregroundColor: JMTengAsset.gray300.color // 일반 상태에서의 텍스트 색상
@@ -45,8 +44,6 @@ class CustomSegmentedControl: UISegmentedControl {
         
         setTitleTextAttributes(normalTextAttributes, for: .normal)
         setTitleTextAttributes(selectedTextAttributes, for: .selected)
-        
-        
     }
     
     private lazy var underlineView: UIView = {

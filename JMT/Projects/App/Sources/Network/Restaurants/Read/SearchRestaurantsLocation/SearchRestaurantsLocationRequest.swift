@@ -13,4 +13,3 @@ struct SearchRestaurantsLocationRequest: Encodable {
     let x: String
     let y: String
 }
-

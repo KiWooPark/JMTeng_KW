@@ -5,8 +5,8 @@
 //  Created by PKW on 4/25/24.
 //
 
-import Foundation
 import Alamofire
+import Foundation
 
 struct UpdateRestaurantsAPI {
     // 맛집 정보 수정하기

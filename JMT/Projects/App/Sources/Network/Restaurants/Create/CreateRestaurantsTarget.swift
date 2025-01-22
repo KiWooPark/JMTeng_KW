@@ -5,8 +5,8 @@
 //  Created by PKW on 4/25/24.
 //
 
-import Foundation
 import Alamofire
+import Foundation
 
 enum CreateRestaurantsTarget {
     case createRestaurantLocation(CreateRestaurantLocationRequest)
@@ -34,7 +34,7 @@ extension CreateRestaurantsTarget: TargetType {
     var parameters: RequestParams {
         switch self{
         case .createRestaurantLocation(let request): return .body(request)
-        case .createRestaurant(let request): return .body(nil)
+        case .createRestaurant: return .body(nil)
         case .createReview(let request): return .qurey(request)
         }
     }

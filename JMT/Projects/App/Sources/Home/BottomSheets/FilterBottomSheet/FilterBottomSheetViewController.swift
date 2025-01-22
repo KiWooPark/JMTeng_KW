@@ -5,9 +5,9 @@
 //  Created by PKW on 2024/01/26.
 //
 
-import UIKit
 import FloatingPanel
 import SnapKit
+import UIKit
 
 class FilterBottomSheetViewController: UIViewController {
     
@@ -65,12 +65,12 @@ class FilterBottomSheetViewController: UIViewController {
     
     // 바텀시트 높이 문제로 일단 사용 X
     @IBAction func didTabCategoryButton(_ sender: Any) {
-        //viewModel?.updateSortType(type: .category)
+        // viewModel?.updateSortType(type: .category)
     }
     
     // 바텀시트 높이 문제로 일단 사용 X
     @IBAction func didTabDrinkingButton(_ sender: Any) {
-        //viewModel?.updateSortType(type: .drinking)
+        // viewModel?.updateSortType(type: .drinking)
     }
 }
 
@@ -114,4 +114,3 @@ extension FilterBottomSheetViewController: UITableViewDataSource {
         return cell
     }
 }
-

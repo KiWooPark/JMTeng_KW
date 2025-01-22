@@ -8,13 +8,11 @@
 import UIKit
 
 protocol NicknameCoordinator: Coordinator {
-    func start()
     func setProfileCoordinator()
     func showProfileViewController()
 }
 
 class DefaultNicknameCoordinator: NicknameCoordinator {
-    
     weak var parentCoordinator: Coordinator?
     var childCoordinators: [Coordinator] = []
     
@@ -24,16 +22,17 @@ class DefaultNicknameCoordinator: NicknameCoordinator {
     
     init(navigationController: UINavigationController?,
          parentCoordinator: Coordinator,
-         finishDelegate: CoordinatorFinishDelegate) {
+         finishDelegate: CoordinatorFinishDelegate)
+    {
         self.navigationController = navigationController
         self.parentCoordinator = parentCoordinator
         self.finishDelegate = finishDelegate
     }
     
     func start() {
-        let nicknameViewController = NicknameViewController.instantiateFromStoryboard(storyboardName: "Login") as NicknameViewController
+        guard let nicknameViewController = NicknameViewController.instantiateFromStoryboard(storyboardName: "Login") as? NicknameViewController else { return }
         nicknameViewController.viewModel?.coordinator = self
-        self.navigationController?.pushViewController(nicknameViewController, animated: true)
+        navigationController?.pushViewController(nicknameViewController, animated: true)
     }
 
     func setProfileCoordinator() {
@@ -48,9 +47,10 @@ class DefaultNicknameCoordinator: NicknameCoordinator {
         if getChildCoordinator(.profileImage) == nil {
             setProfileCoordinator()
         }
-        let coordinator = getChildCoordinator(.profileImage) as! ProfileImageCoordinator
-        coordinator.start()
         
+        if let coordinator = getChildCoordinator(.profileImage) as? ProfileImageCoordinator {
+            coordinator.start()
+        }
     }
     
     func getChildCoordinator(_ type: CoordinatorType) -> Coordinator? {
@@ -69,6 +69,6 @@ class DefaultNicknameCoordinator: NicknameCoordinator {
 
 extension DefaultNicknameCoordinator: CoordinatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: Coordinator) {
-        self.childCoordinators = self.childCoordinators.filter{ $0.type != childCoordinator.type }
+        childCoordinators = childCoordinators.filter { $0.type != childCoordinator.type }
     }
 }

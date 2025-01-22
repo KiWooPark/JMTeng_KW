@@ -12,20 +12,11 @@ class AlbumCell: UITableViewCell {
     @IBOutlet weak var albumImageView: UIImageView!
     @IBOutlet weak var albumTitleLabel: UILabel!
     @IBOutlet weak var albumCountLabel: UILabel!
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-
-    }
-    
+        
     override func prepareForReuse() {
         super.prepareForReuse()
         
         prepare(info: nil)
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
     }
     
     func prepare(info: AlbumInfo?) {

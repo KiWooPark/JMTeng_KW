@@ -71,12 +71,12 @@ class DefaultTabBarCoordinator: TabBarCoordinator {
             tabBarController.tabBar.scrollEdgeAppearance = appearance
         }
         
-        let lineView = UIView(frame: CGRect(x: 0, y: 0, width:  self.tabBarController.tabBar.frame.width, height: 1))
+        let lineView = UIView(frame: CGRect(x: 0, y: 0, width: self.tabBarController.tabBar.frame.width, height: 1))
         lineView.backgroundColor = JMTengAsset.gray100.color // 선의 색상 설정
         lineView.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
         self.tabBarController.tabBar.addSubview(lineView)
         
-        if let window = UIApplication.shared.windows.filter({$0.isKeyWindow}).first {
+        if let window = UIApplication.shared.windows.filter({ $0.isKeyWindow }).first {
             
             window.rootViewController = self.tabBarController
             
@@ -158,7 +158,6 @@ enum TabBarPage: String, CaseIterable {
         return self.rawValue
     }
 }
-
 
 extension DefaultTabBarCoordinator: CoordinatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: Coordinator) {

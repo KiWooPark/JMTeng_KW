@@ -82,4 +82,3 @@ extension InfoCommentCell: UITextViewDelegate {
         updateCharacterCountLabel(with: characterCount)
     }
 }
-

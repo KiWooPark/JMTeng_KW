@@ -14,4 +14,3 @@ struct AlbumInfo {
     var numberOfItems: Int = 0
     var collection: PHAssetCollection?
 }
-

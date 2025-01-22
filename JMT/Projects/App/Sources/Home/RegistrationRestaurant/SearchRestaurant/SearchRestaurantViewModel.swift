@@ -41,9 +41,9 @@ class SearchRestaurantViewModel {
             let y = locationManager.coordinate?.latitude ?? 0.0
             
             let newRestaurants = try await ReadRestaurantsAPI.searchRestaurantLocationsAsync(request: SearchRestaurantsLocationRequest(query: keyword,
-                                                                                                                                   page: currentPage,
-                                                                                                                                   x: "\(x)",
-                                                                                                                                   y: "\(y)")).toDomain
+                                                                                                                                       page: currentPage,
+                                                                                                                                       x: "\(x)",
+                                                                                                                                       y: "\(y)")).toDomain
             let startIndex = restaurantsInfo.count
             let endIndex = startIndex + newRestaurants.count
             let indexPaths = (startIndex..<endIndex).map { IndexPath(row: $0, section: 0) }
@@ -64,5 +64,3 @@ class SearchRestaurantViewModel {
     // MARK: - Error Handling
     // 에러 처리와 관련된 로직을 담당하는 부분입니다.
 }
-
-

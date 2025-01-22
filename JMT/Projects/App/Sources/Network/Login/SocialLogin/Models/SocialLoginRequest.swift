@@ -15,4 +15,3 @@ struct LogoutRequest: Encodable {
     let accessToken: String
     let refreshToken: String
 }
-

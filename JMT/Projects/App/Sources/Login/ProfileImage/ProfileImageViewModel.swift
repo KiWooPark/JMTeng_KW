@@ -16,8 +16,8 @@ class ProfileImageViewModel {
     weak var coordinator: ProfileImageCoordinator?
     var photoAuthService: PhotoAuthService?
     
-    var onSuccess: ((UpdateUI) -> ())?
-    var onFailure: (() -> ())?
+    var onSuccess: ((UpdateUI) -> Void)?
+    var onFailure: (() -> Void)?
     
     var nickname: String?
     var isDefaultProfileImage: Bool = true
@@ -50,14 +50,14 @@ class ProfileImageViewModel {
                     case "UNAUTHORIZED":
                         print("인증이 필요하므로 엑세스토큰 갱신 필요")
                     default:
-            
-                        DefaultKeychainService.shared.accessToken = DefaultKeychainService.shared.tempAccessToken
-                        DefaultKeychainService.shared.refreshToken = DefaultKeychainService.shared.tempRefreshToken
-                        DefaultKeychainService.shared.accessTokenExpiresIn = DefaultKeychainService.shared.tempAccessTokenExpiresIn
+    
+                        DefaultKeychainService.shared.setValue(DefaultKeychainService.shared.getValue(for: KeychainKey.tempAccessToken, type: String.self), for: KeychainKey.accessToken)
+                        DefaultKeychainService.shared.setValue(DefaultKeychainService.shared.getValue(for: KeychainKey.tempRefreshToken, type: String.self), for: KeychainKey.refreshToken)
+                        DefaultKeychainService.shared.setValue(DefaultKeychainService.shared.getValue(for: KeychainKey.tempAccessTokenExpiresIn, type: Int.self), for: KeychainKey.accessTokenExpiresIn)
                         
-                        DefaultKeychainService.shared.tempAccessToken = nil
-                        DefaultKeychainService.shared.tempRefreshToken = nil
-                        DefaultKeychainService.shared.tempAccessTokenExpiresIn = nil
+                        DefaultKeychainService.shared.removeKeychain(KeychainKey.tempAccessToken)
+                        DefaultKeychainService.shared.removeKeychain(KeychainKey.tempRefreshToken)
+                        DefaultKeychainService.shared.removeKeychain(KeychainKey.tempAccessTokenExpiresIn)
                         
                         self.onSuccess?(.saveProfileImage)
                     }
@@ -83,19 +83,18 @@ class ProfileImageViewModel {
                 case "UNAUTHORIZED":
                     print("인증이 필요하므로 엑세스토큰 갱신 필요")
                 default:
+                    DefaultKeychainService.shared.setValue(DefaultKeychainService.shared.getValue(for: KeychainKey.tempAccessToken, type: String.self), for: KeychainKey.accessToken)
+                    DefaultKeychainService.shared.setValue(DefaultKeychainService.shared.getValue(for: KeychainKey.tempRefreshToken, type: String.self), for: KeychainKey.refreshToken)
+                    DefaultKeychainService.shared.setValue(DefaultKeychainService.shared.getValue(for: KeychainKey.tempAccessTokenExpiresIn, type: Int.self), for: KeychainKey.accessTokenExpiresIn)
                     
-                    DefaultKeychainService.shared.accessToken = DefaultKeychainService.shared.tempAccessToken
-                    DefaultKeychainService.shared.refreshToken = DefaultKeychainService.shared.tempRefreshToken
-                    DefaultKeychainService.shared.accessTokenExpiresIn = DefaultKeychainService.shared.tempAccessTokenExpiresIn
-                    
-                    DefaultKeychainService.shared.tempAccessToken = nil
-                    DefaultKeychainService.shared.tempRefreshToken = nil
-                    DefaultKeychainService.shared.tempAccessTokenExpiresIn = nil
+                    DefaultKeychainService.shared.removeKeychain(KeychainKey.tempAccessToken)
+                    DefaultKeychainService.shared.removeKeychain(KeychainKey.tempRefreshToken)
+                    DefaultKeychainService.shared.removeKeychain(KeychainKey.tempAccessTokenExpiresIn)
                     
                     self.onSuccess?(.saveProfileImage)
                 }
             case .failure(let error):
-                print("saveDefaultProfileImage - 실패!!",error)
+                print("saveDefaultProfileImage - 실패!!", error)
             }
             
             self.preventButtonTouch = false

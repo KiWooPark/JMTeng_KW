@@ -5,26 +5,17 @@
 //  Created by 이지훈 on 2/16/24.
 //
 
-import UIKit
 import Alamofire
+import UIKit
 
 class FirstSegmentViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
-    
-    //따로 뷰모델을 만들지않고 참조만 하기
-// var coordinator: MyPageCoordinator?
-    
     var viewModel: MyPageViewModel?
     
-    private var keychainAccess: KeychainAccessible = DefaultKeychainAccessible()
-    
-    
-    //필터링용
+    // 필터링용
     var selectedDistance: String = "가까운순"
     var selectedType: String = ""
     var selectedAlcohol: Bool = false
     var restaurantID: Int?
-    
-    
     
     @IBOutlet weak var registerHeaderView: UIView!
     
@@ -43,8 +34,6 @@ class FirstSegmentViewController: UIViewController, UITableViewDelegate, UITable
     @IBOutlet weak var distanceButton: UIButton!
     
     @IBOutlet weak var alcholBtn: UIButton!
-    
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,15 +54,12 @@ class FirstSegmentViewController: UIViewController, UITableViewDelegate, UITable
         
         viewModel?.fetchUserInfo { }
         
-        
         setupMenus() // 이 함수를 viewDidLoad에 추가합니다.
         
         // 탭 제스처 인식기를 추가하여 뷰를 탭했을 때 UIMenu를 표시하도록 설정
         addTapGestureToView(distanceLabel, action: #selector(showDistanceMenuAction))
         addTapGestureToView(typeLabel, action: #selector(showTypeMenuAction))
         addTapGestureToView(alcholLabel, action: #selector(showAlcoholMenuAction))
-        
-        
     }
     
     required init?(coder: NSCoder) {
@@ -91,11 +77,10 @@ class FirstSegmentViewController: UIViewController, UITableViewDelegate, UITable
     func getUserInfo() {
         UserInfoAPI.getLoginInfo { response in
             switch response {
-            case .success(let info):
+            case .success:
                 print(1)
             case .failure(let error):
                 print("getUserInfo 실패!!", error)
-                //self.onFailure?()
             }
         }
     }
@@ -131,55 +116,9 @@ class FirstSegmentViewController: UIViewController, UITableViewDelegate, UITable
         alcholrFilterView.clipsToBounds = true
     }
     
-//    func fetchRestaurants() {
-//        print("Fetching restaurants with selectedType: \(selectedType), selectedAlcohol: \(selectedAlcohol)")
-//        guard let accessToken = keychainAccess.getToken("accessToken") else {
-//            print("Access Token is not available")
-//            return
-//        }
-//        
-//        let headers: HTTPHeaders = [
-//            "Authorization": "Bearer \(accessToken)",
-//            "Content-Type": "application/json"
-//        ]
-//        
-//        let url = "https://api.jmt-matzip.dev/api/v1/restaurant/search?page=0&size=20"
-//        var filterParameters: [String: Any] = [:]
-//        if !selectedType.isEmpty {
-//            filterParameters["categoryFilter"] = selectedType
-//        }
-//        filterParameters["isCanDrinkLiquor"] = selectedAlcohol
-//        
-//        let parameters: [String: Any] = [
-//            "userLocation": ["x": "", "y": ""],
-//            "filter": filterParameters
-//        ]
-//        
-//        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers).responseDecodable(of: ResturantResponse.self) { [weak self] response in
-//            guard let self = self else { return }
-//            
-//            switch response.result {
-//            case .success(let responseData):
-//                print("Successfully fetched restaurants data")
-//                let filteredData = responseData.data?.restaurants?.filter { restaurant in
-//                   
-//                    true
-//                } ?? []
-//                self.viewModel?.restaurantsData = filteredData
-//                DispatchQueue.main.async {
-//                    self.mainTable.reloadData()
-//                }
-//            case .failure(let error):
-//                print("Error fetching restaurants data: \(error)")
-//            }
-//        }
-//    }
-    
-    
-    
-    //가까운순 필터링
-    
-    @objc func showDistanceMenuAction() {
+    // 가까운순 필터링
+    @objc
+    func showDistanceMenuAction() {
         let actions = [
             UIAction(title: "가까운순", handler: { [weak self] _ in self?.handleDistanceFilterChange("가까운순") }),
             UIAction(title: "좋아요", handler: { [weak self] _ in self?.handleDistanceFilterChange("좋아요") }),
@@ -189,7 +128,8 @@ class FirstSegmentViewController: UIViewController, UITableViewDelegate, UITable
         distanceButton.showsMenuAsPrimaryAction = true
     }
     
-    @objc func showTypeMenuAction() {
+    @objc 
+    func showTypeMenuAction() {
         let foodTypes: [FoodType] = [
             FoodType(filter: .KOREA),
             FoodType(filter: .JAPAN),
@@ -204,7 +144,7 @@ class FirstSegmentViewController: UIViewController, UITableViewDelegate, UITable
             UIAction(title: foodType.name, image: nil) { [weak self] _ in
                 self?.selectedType = foodType.filter.rawValue
                 self?.typeLabel.text = foodType.name
-//                self?.fetchRestaurants()
+                //                self?.fetchRestaurants()
             }
         }
         
@@ -215,7 +155,8 @@ class FirstSegmentViewController: UIViewController, UITableViewDelegate, UITable
     
     
     
-    @objc func showAlcoholMenuAction() {
+    @objc 
+    func showAlcoholMenuAction() {
         let actions = [
             UIAction(title: "주류가능", handler: { [weak self] _ in self?.handleAlcoholFilterChange(true) }),
             UIAction(title: "주류불가능/모름", handler: { [weak self] _ in self?.handleAlcoholFilterChange(false) })
@@ -228,13 +169,13 @@ class FirstSegmentViewController: UIViewController, UITableViewDelegate, UITable
     func handleDistanceFilterChange(_ filter: String) {
         selectedDistance = filter
         distanceLabel.text = filter
-//        fetchRestaurants()
+        //        fetchRestaurants()
     }
     
     func handleAlcoholFilterChange(_ canDrink: Bool) {
         selectedAlcohol = canDrink
         alcholLabel.text = canDrink ? "주류가능" : "주류불가능/모름"
-//        fetchRestaurants()
+        //        fetchRestaurants()
     }
     
     
@@ -250,7 +191,7 @@ class FirstSegmentViewController: UIViewController, UITableViewDelegate, UITable
         
         let target = viewModel?.testRestaurantsData[indexPath.row]
         cell.configureData(with: target)
-
+        
         return cell
     }
     
@@ -264,9 +205,7 @@ class FirstSegmentViewController: UIViewController, UITableViewDelegate, UITable
             viewModel?.coordinator?.showRestaurantDetail(for: restaurantId)
         }
     }
-    
-    
-    
+
     @IBAction func didtapDistance(_ sender: Any) {
         showDistanceMenuAction()
     }
@@ -279,6 +218,4 @@ class FirstSegmentViewController: UIViewController, UITableViewDelegate, UITable
     @IBAction func alcholBtn(_ sender: Any) {
         showAlcoholMenuAction()
     }
-    
 }
-

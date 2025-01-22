@@ -5,8 +5,8 @@
 //  Created by PKW on 2023/12/22.
 //
 
-import UIKit
 import FloatingPanel
+import UIKit
 
 protocol HomeCoordinator: Coordinator {
     func setUserLocationCoordinator()
@@ -38,9 +38,9 @@ class DefaultHomeCoordinator: HomeCoordinator {
     }
     
     func start() {
-        let homeViewController = HomeViewController.instantiateFromStoryboard(storyboardName: "Home") as HomeViewController
+        guard let homeViewController = HomeViewController.instantiateFromStoryboard(storyboardName: "Home") as? HomeViewController else { return }
         homeViewController.viewModel?.coordinator = self
-        self.navigationController?.pushViewController(homeViewController, animated: true)
+        navigationController?.pushViewController(homeViewController, animated: true)
     }
     
     func setUserLocationCoordinator() {
@@ -55,13 +55,16 @@ class DefaultHomeCoordinator: HomeCoordinator {
             setUserLocationCoordinator()
         }
         
-        let coordinator = getChildCoordinator(.userLocation) as! UserLocationCoordinator
-        coordinator.enterPoint = endPoint
-        coordinator.start()
+        if let coordinator = getChildCoordinator(.userLocation) as? UserLocationCoordinator {
+            coordinator.enterPoint = endPoint
+            coordinator.start()
+        }
     }
     
     func setSearchRestaurantCoordinator() {
-        let coordinator = DefaultSearchRestaurantCoordinator(navigationController: navigationController, parentCoordinator: self, finishDelegate: self)
+        let coordinator = DefaultSearchRestaurantCoordinator(navigationController: navigationController,
+                                                             parentCoordinator: self,
+                                                             finishDelegate: self)
         childCoordinators.append(coordinator)
     }
     
@@ -70,8 +73,9 @@ class DefaultHomeCoordinator: HomeCoordinator {
             setSearchRestaurantCoordinator()
         }
         
-        let coordinator = getChildCoordinator(.searchRestaurant) as! SearchRestaurantCoordinator
-        coordinator.start()
+        if let coordinator = getChildCoordinator(.searchRestaurant) as? SearchRestaurantCoordinator {
+            coordinator.start()
+        }
     }
     
     func showSearchTabWithButton() {
@@ -90,12 +94,15 @@ class DefaultHomeCoordinator: HomeCoordinator {
             setCreateGroupCoordinator()
         }
         
-        let coordinator = getChildCoordinator(.createGroup) as! CreateGroupCoordinator
-        coordinator.start()
+        if let coordinator = getChildCoordinator(.createGroup) as? CreateGroupCoordinator {
+            coordinator.start()
+        }
     }
     
     func setDetailRestaurantCoordinator() {
-        let coordinator = DefaultRestaurantDetailCoordinator(navigationController: navigationController, parentCoordinator: self, finishDelegate: self)
+        let coordinator = DefaultRestaurantDetailCoordinator(navigationController: navigationController,
+                                                             parentCoordinator: self,
+                                                             finishDelegate: self)
         childCoordinators.append(coordinator)
     }
     
@@ -104,8 +111,9 @@ class DefaultHomeCoordinator: HomeCoordinator {
             setDetailRestaurantCoordinator()
         }
         
-        let coordinator = getChildCoordinator(.restaurantDetail) as! RestaurantDetailCoordinator
-        coordinator.start(id: id)
+        if let coordinator = getChildCoordinator(.restaurantDetail) as? RestaurantDetailCoordinator {
+            coordinator.start(id: id)
+        }
     }
     
     func getChildCoordinator(_ type: CoordinatorType) -> Coordinator? {
@@ -128,16 +136,15 @@ class DefaultHomeCoordinator: HomeCoordinator {
     }
 }
 
-
 extension DefaultHomeCoordinator: CoordinatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: Coordinator) {
-        self.childCoordinators = self.childCoordinators.filter{ $0.type != childCoordinator.type }
+        childCoordinators = childCoordinators.filter { $0.type != childCoordinator.type }
     }
 }
 
 extension DefaultHomeCoordinator: RestaurantsDataUpdatable {
     func updateRestaurantsData() {
-        if let vc = self.navigationController?.viewControllers.first as? HomeViewController {
+        if let vc = navigationController?.viewControllers.first as? HomeViewController {
             vc.viewModel?.didUpdateGroupRestaurantsData?()
         }
     }

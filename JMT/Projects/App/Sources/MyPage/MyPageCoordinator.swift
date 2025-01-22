@@ -8,22 +8,17 @@
 import UIKit
 
 protocol MyPageCoordinator: Coordinator {
-   
     func goToDetailView(for segmentIndex: Int)
     func goToDetailMyPageView()
-    //func goToTestt()
-    
     
     func setDetailMyPageCoordinator()
     func showDetailMyPageVieController()
     
     func setRestaurantCoordinator()
     func showRestaurantDetail(for restaurantId: Int)
-
 }
 
 class DefaultMyPageCoordinator: MyPageCoordinator {
-    
     var parentCoordinator: Coordinator? = nil
     
     var childCoordinators: [Coordinator] = []
@@ -32,25 +27,20 @@ class DefaultMyPageCoordinator: MyPageCoordinator {
     var type: CoordinatorType = .mypage
     
     init(navigationController: UINavigationController?, parentCoordinator: Coordinator) {
-        
         self.navigationController = navigationController
         self.parentCoordinator = parentCoordinator
     }
     
     func start() {
-        let mypageViewController = MyPageViewController.instantiateFromStoryboard(storyboardName: "MyPage") as MyPageViewController
-        
+        guard let mypageViewController = MyPageViewController.instantiateFromStoryboard(storyboardName: "MyPage") as? MyPageViewController else { return }
         mypageViewController.viewModel?.coordinator = self
-        self.navigationController?.pushViewController(mypageViewController, animated: true)
+        navigationController?.pushViewController(mypageViewController, animated: true)
     }
-    
-
     
     func goToDetailView(for segmentIndex: Int) {
         //   goToSegmentViewController(for : segmentIndex)
     }
-    
-    
+        
     func goToDetailMyPageView() {
         let storyboard = UIStoryboard(name: "DetailMyPage", bundle: nil)
         if let viewController = storyboard.instantiateViewController(withIdentifier: "DetailMyPageVC") as? DetailMyPageVC {
@@ -69,25 +59,24 @@ class DefaultMyPageCoordinator: MyPageCoordinator {
     }
     
     func setDetailMyPageCoordinator() {
-        let coordinator = DefaultDetailMyPageCoordinator(navigationController: self.navigationController)
+        let coordinator = DefaultDetailMyPageCoordinator(navigationController: navigationController)
         childCoordinators.append(coordinator)
     }
     
     func showDetailMyPageVieController() {
         if getChildCoordinator(.detailMyPage) == nil {
-                   setDetailMyPageCoordinator()
-               }
-               
-               let coordinator = getChildCoordinator(.detailMyPage) as! DetailMyPageCoordinator
-               coordinator.start()
-           
+            setDetailMyPageCoordinator()
+        }
         
+        if let coordinator = getChildCoordinator(.detailMyPage) as? DetailMyPageCoordinator {
+            coordinator.start()
+        }
     }
     
-  
-    
     func setRestaurantCoordinator() {
-        let coordinator = DefaultRestaurantDetailCoordinator(navigationController: self.navigationController, parentCoordinator: self, finishDelegate: self)
+        let coordinator = DefaultRestaurantDetailCoordinator(navigationController: navigationController,
+                                                             parentCoordinator: self,
+                                                             finishDelegate: self)
         childCoordinators.append(coordinator)
     }
     
@@ -96,37 +85,35 @@ class DefaultMyPageCoordinator: MyPageCoordinator {
             setRestaurantCoordinator()
         }
         
-        let coordinator = getChildCoordinator(.restaurantDetail) as! RestaurantDetailCoordinator
-        coordinator.start(id: restaurantId)
+        if let coordinator = getChildCoordinator(.restaurantDetail) as? RestaurantDetailCoordinator {
+            coordinator.start(id: restaurantId)
+        }
     }
 
-    
-    
     func getChildCoordinator(_ type: CoordinatorType) -> Coordinator? {
         var childCoordinator: Coordinator? = nil
         
         switch type {
         case .detailMyPage:
-            childCoordinator = childCoordinators.first(where:  { $0 is DetailMyPageCoordinator })
+            childCoordinator = childCoordinators.first(where: { $0 is DetailMyPageCoordinator })
         case .restaurantDetail:
-            childCoordinator = childCoordinators.first(where:  { $0 is RestaurantDetailCoordinator })
+            childCoordinator = childCoordinators.first(where: { $0 is RestaurantDetailCoordinator })
         default:
             break
         }
-        
         return childCoordinator
     }
 }
 
 extension DefaultMyPageCoordinator: CoordinatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: Coordinator) {
-        self.childCoordinators = self.childCoordinators.filter{ $0.type != childCoordinator.type }
+        childCoordinators = childCoordinators.filter { $0.type != childCoordinator.type }
     }
 }
 
 extension DefaultMyPageCoordinator: RestaurantsDataUpdatable {
     func updateRestaurantsData() {
-        if let vc = self.navigationController?.viewControllers.first as? MyPageViewController {
+        if let vc = navigationController?.viewControllers.first as? MyPageViewController {
             Task {
                 try await vc.viewModel?.fetchUserRestaurants()
             }

@@ -5,8 +5,8 @@
 //  Created by PKW on 2024/01/19.
 //
 
-import Foundation
 import Alamofire
+import Foundation
 
 enum RefreshTokenTarget {
     case refreshToken(RefreshTokenRequest)

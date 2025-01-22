@@ -5,8 +5,8 @@
 //  Created by PKW on 2024/02/28.
 //
 
-import Foundation
 import Alamofire
+import Foundation
 
 enum GroupTarget {
     case leaveGroup(MyGroupRequest)

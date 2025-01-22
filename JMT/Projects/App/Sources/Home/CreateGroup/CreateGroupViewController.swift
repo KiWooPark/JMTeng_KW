@@ -5,9 +5,9 @@
 //  Created by PKW on 3/20/24.
 //
 
+import SnapKit
 import UIKit
 import WebKit
-import SnapKit
 
 class CreateGroupViewController: UIViewController, KeyboardEvent {
 
@@ -43,7 +43,7 @@ class CreateGroupViewController: UIViewController, KeyboardEvent {
     
     func loadWebPage() {
         let url = WebViewUrl.createGroup.urlString
-        let accessToken = DefaultKeychainService.shared.accessToken ?? ""
+        let accessToken = DefaultKeychainService.shared.getValue(for: KeychainKey.accessToken, type: String.self) ?? ""
     
         if let url = URL(string: url) {
             var request = URLRequest(url: url)
@@ -88,7 +88,7 @@ class CreateGroupViewController: UIViewController, KeyboardEvent {
 
 extension CreateGroupViewController {
     private func handleTokenRequest(str: String) {
-        let accessToken = DefaultKeychainService.shared.accessToken ?? ""
+        let accessToken = DefaultKeychainService.shared.getValue(for: KeychainKey.accessToken, type: String.self) ?? ""
         evaluateJavaScriptFunction(functionName: str, parameter: accessToken)
     }
     
@@ -136,7 +136,7 @@ extension CreateGroupViewController {
                     self.tabBarController?.tabBar.isHidden = !isVisible
                 }
             case "requestResponse":
-                if let data = dictionary["data"] as? [String: Any], let groupId = data["groupId"] as? Int {
+                if let data = dictionary["data"] as? [String: Any], let _ = data["groupId"] as? Int {
                     coordinator?.goToHomeViewController()
                 }
             default:

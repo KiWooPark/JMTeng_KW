@@ -5,13 +5,12 @@
 //  Created by 이지훈 on 2/16/24.
 //
 
-import UIKit
 import Alamofire
-
+import UIKit
 
 class SecondSegmentViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
    
-    private let keychainAccess: KeychainAccessible
+    private let keychainAccess: DefaultKeychainService
 
     var imageNames: [String] = [] // 이미지 이름 배열을 저장할 프로퍼티 추가
 //    var reviews: [Review] = [] // 서버에서 받아온 리뷰 데이터를 저장할 배열
@@ -32,19 +31,16 @@ class SecondSegmentViewController: UIViewController, UITableViewDelegate, UITabl
         likedReply.dataSource = self
         layout()
         fetchReviews()
-
-        
-        
     }
     
     // DI를 통한 초기화
-    init(keychainAccess: KeychainAccessible = DefaultKeychainAccessible()) {
+    init(keychainAccess: DefaultKeychainService = DefaultKeychainService.shared) {
         self.keychainAccess = keychainAccess
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
-        self.keychainAccess = DefaultKeychainAccessible()
+        self.keychainAccess = DefaultKeychainService.shared
         super.init(coder: coder)
     }
     
@@ -62,14 +58,12 @@ class SecondSegmentViewController: UIViewController, UITableViewDelegate, UITabl
     
     
     func fetchReviews() {
-        let url = "https://api.jmt-matzip.dev/api/v1/restaurant/my/review?page=1&size=20" //"https://api.jmt-matzip.dev/api/v1/restaurant/my/review?page=1&size=20"
+        let url = "https://api.jmt-matzip.dev/api/v1/restaurant/my/review?page=1&size=20" // "https://api.jmt-matzip.dev/api/v1/restaurant/my/review?page=1&size=20"
 
-        
-        guard let accessToken = keychainAccess.getToken("accessToken") else {
-            print("Access Token is not available")
+        guard let accessToken = keychainAccess.getValue(for: KeychainKey.accessToken, type: String.self) else {
             return
         }
-        
+    
         let headers: HTTPHeaders = [
             "Authorization": "Bearer \(accessToken)",
             "Content-Type": "application/json"
@@ -77,8 +71,6 @@ class SecondSegmentViewController: UIViewController, UITableViewDelegate, UITabl
         
         let x = viewModel?.locationManager.coordinate?.longitude ?? 0.0
         let y = viewModel?.locationManager.coordinate?.latitude ?? 0.0
-        
-        print("===", x,y)
         
         let parameters: [String: Any] = [
             "userLocation": ["x": "\(x)", "y": "\(y)"],
@@ -111,8 +103,6 @@ class SecondSegmentViewController: UIViewController, UITableViewDelegate, UITabl
         }
     }
 
-
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel?.testReviews.count ?? 0
     }
@@ -125,22 +115,4 @@ class SecondSegmentViewController: UIViewController, UITableViewDelegate, UITabl
         cell.configure(with: target)
         return cell
     }
-    
-//    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return viewModel?.testReviews[]
-//
-//    }
-//    
-//    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-//        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "myPageReviewCollectionViewCell", for: indexPath) as? myPageReviewCollectionViewCell else {
-//            fatalError("Unable to dequeue myPageReviewCollectionViewCell")
-//        }
-//
-//        let review = reviews[indexPath.section]
-//        let imageUrl = review.reviewImages[indexPath.item]
-//
-//        return cell
-//    }
-
 }
-

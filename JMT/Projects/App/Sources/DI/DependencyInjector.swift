@@ -17,7 +17,7 @@ final class DependencyInjector: Injector {
     
     static let shared = DependencyInjector()
     var container: Container = Container()
-    private init() {}
+    private init() { }
     
     func assemble(_ assemblyList: [Swinject.Assembly]) {
         assemblyList.forEach {

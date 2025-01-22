@@ -15,7 +15,6 @@ protocol SearchRestaurantMapCoordinator: Coordinator {
 }
 
 class DefaultSearchRestaurantMapCoordinator: SearchRestaurantMapCoordinator {
-    
     var parentCoordinator: Coordinator?
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController?
@@ -24,19 +23,20 @@ class DefaultSearchRestaurantMapCoordinator: SearchRestaurantMapCoordinator {
     
     init(navigationController: UINavigationController?,
          parentCoordinator: Coordinator?,
-         finishDelegate: CoordinatorFinishDelegate?) {
+         finishDelegate: CoordinatorFinishDelegate?)
+    {
         self.navigationController = navigationController
         self.parentCoordinator = parentCoordinator
         self.finishDelegate = finishDelegate
     }
   
-    func start() { }
+    func start() {}
     
     func start(info: SearchRestaurantsLocationModel?) {
-        let searchRestaurantMapViewController = SearchRestaurantMapViewController.instantiateFromStoryboard(storyboardName: "SearchRestaurantMap") as SearchRestaurantMapViewController
+        guard let searchRestaurantMapViewController = SearchRestaurantMapViewController.instantiateFromStoryboard(storyboardName: "SearchRestaurantMap") as? SearchRestaurantMapViewController else { return }
         searchRestaurantMapViewController.viewModel?.coordinator = self
         searchRestaurantMapViewController.viewModel?.info = info
-        self.navigationController?.pushViewController(searchRestaurantMapViewController, animated: true)
+        navigationController?.pushViewController(searchRestaurantMapViewController, animated: true)
     }
     
     func setRegistrationRestaurantInfoCoordinator() {
@@ -49,8 +49,9 @@ class DefaultSearchRestaurantMapCoordinator: SearchRestaurantMapCoordinator {
             setRegistrationRestaurantInfoCoordinator()
         }
         
-        let coordinator = getChildCoordinator(.registrationRestaurantInfo) as! RegistrationRestaurantInfoCoordinator
-        coordinator.start(info: info)
+        if let coordinator = getChildCoordinator(.registrationRestaurantInfo) as? RegistrationRestaurantInfoCoordinator {
+            coordinator.start(info: info)
+        }
     }
     
     func getChildCoordinator(_ type: CoordinatorType) -> Coordinator? {
@@ -68,7 +69,6 @@ class DefaultSearchRestaurantMapCoordinator: SearchRestaurantMapCoordinator {
 
 extension DefaultSearchRestaurantMapCoordinator: CoordinatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: Coordinator) {
-        self.childCoordinators = self.childCoordinators.filter{ $0.type != childCoordinator.type }
+        childCoordinators = childCoordinators.filter { $0.type != childCoordinator.type }
     }
 }
-

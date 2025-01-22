@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -22,17 +22,17 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <button opaque="NO" contentMode="scaleToFill" semanticContentAttribute="forceRightToLeft" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mg4-QD-2vv">
-                    <rect key="frame" x="0.0" y="16" width="77" height="36"/>
+                    <rect key="frame" x="0.0" y="16" width="67" height="36"/>
                     <color key="backgroundColor" name="gray100"/>
                     <fontDescription key="fontDescription" name="Pretendard-Medium" family="Pretendard" pointSize="12"/>
                     <inset key="contentEdgeInsets" minX="12" minY="4" maxX="10" maxY="4"/>
                     <inset key="imageEdgeInsets" minX="4" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                    <state key="normal" title="가까운 순" image="MenuArrow">
+                    <state key="normal" title="최신 순" image="MenuArrow">
                         <color key="titleColor" name="gray900"/>
                     </state>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" semanticContentAttribute="forceRightToLeft" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ER3-UB-7bY">
-                    <rect key="frame" x="102" y="22.666666666666671" width="53" height="23"/>
+                    <rect key="frame" x="92" y="22.666666666666671" width="53" height="23"/>
                     <color key="backgroundColor" name="gray100"/>
                     <fontDescription key="fontDescription" name="Pretendard-Medium" family="Pretendard" pointSize="12"/>
                     <inset key="contentEdgeInsets" minX="12" minY="4" maxX="10" maxY="4"/>
@@ -42,7 +42,7 @@
                     </state>
                 </button>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ofk-cm-7wm">
-                    <rect key="frame" x="89" y="27" width="1" height="14"/>
+                    <rect key="frame" x="79" y="27" width="1" height="14"/>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="1" id="Bx9-DT-qSh"/>
@@ -50,7 +50,7 @@
                     </constraints>
                 </view>
                 <button opaque="NO" contentMode="scaleToFill" semanticContentAttribute="forceRightToLeft" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RSE-eI-9J3">
-                    <rect key="frame" x="163" y="22.666666666666671" width="77" height="23"/>
+                    <rect key="frame" x="153" y="22.666666666666671" width="77" height="23"/>
                     <color key="backgroundColor" name="gray100"/>
                     <fontDescription key="fontDescription" name="Pretendard-Medium" family="Pretendard" pointSize="12"/>
                     <inset key="contentEdgeInsets" minX="12" minY="4" maxX="10" maxY="4"/>

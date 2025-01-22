@@ -48,3 +48,20 @@ struct SearchRestaurantsPage: Decodable {
     let pageFirst: Bool
     let pageLast: Bool
 }
+
+extension SearchRestaurantsResponse {
+    var toDomain: [SearchRestaurantsModel] {
+        return data.restaurants.map { data in
+            
+            SearchRestaurantsModel(id: data.id,
+                                   groupName: data.groupName,
+                                   name: data.name,
+                                   userProfileImageUrl: data.userProfileImageUrl,
+                                   userNickName: data.userNickName,
+                                   restaurantImageUrl: data.restaurantImageUrl,
+                                   category: data.category,
+                                   canDrinkLiquor: data.canDrinkLiquor,
+                                   differenceInDistance: data.differenceInDistance)
+        }
+    }
+}

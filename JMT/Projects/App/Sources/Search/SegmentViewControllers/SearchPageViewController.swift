@@ -5,10 +5,9 @@
 //  Created by PKW on 2024/01/30.
 //
 
-import UIKit
 import Swinject
 import SwinjectStoryboard
-
+import UIKit
 
 protocol SearchPageViewControllerDelegate: AnyObject {
     func updateSegmentIndex(index: Int)

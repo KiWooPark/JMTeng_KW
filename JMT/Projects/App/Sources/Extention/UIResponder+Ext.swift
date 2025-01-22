@@ -20,7 +20,8 @@ extension UIResponder {
         return Static.responder
     }
     
-    @objc private func _trap() {
+    @objc 
+    private func _trap() {
         Static.responder = self
     }
 }

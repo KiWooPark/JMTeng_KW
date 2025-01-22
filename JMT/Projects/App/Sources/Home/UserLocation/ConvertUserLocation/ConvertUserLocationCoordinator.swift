@@ -5,9 +5,9 @@
 //  Created by PKW on 2024/02/12.
 //
 
+import CoreLocation
 import Foundation
 import UIKit
-import CoreLocation
 
 protocol ConvertUserLocationCoordinator: Coordinator {
     func startWithData(data: SearchLocationModel?)
@@ -28,10 +28,10 @@ class DefaultConvertUserLocationCoordinator: ConvertUserLocationCoordinator {
         self.finishDelegate = finishDelegate
     }
     
-    func start() { }
+    func start() {}
     
     func startWithData(data: SearchLocationModel?) {
-        let convertUserLoctaionViewController = ConvertUserLocationViewController.instantiateFromStoryboard(storyboardName: "ConvertUserLocation") as ConvertUserLocationViewController
+        guard let convertUserLoctaionViewController = ConvertUserLocationViewController.instantiateFromStoryboard(storyboardName: "ConvertUserLocation") as? ConvertUserLocationViewController else { return }
         convertUserLoctaionViewController.viewModel?.coordinator = self
         convertUserLoctaionViewController.viewModel?.locationData = data
         
@@ -40,7 +40,7 @@ class DefaultConvertUserLocationCoordinator: ConvertUserLocationCoordinator {
     
     func goToHomeViewController(lon: Double, lat: Double) {
         if let homeViewController = self.navigationController?.viewControllers.first as? HomeViewController {
-            homeViewController.viewModel?.locationManager.coordinate = CLLocationCoordinate2D.init(latitude: lon, longitude: lat)
+            homeViewController.viewModel?.locationManager.coordinate = CLLocationCoordinate2D(latitude: lon, longitude: lat)
             homeViewController.updateCurrentAddressData()
             homeViewController.updateCamera()
             self.navigationController?.popToRootViewController(animated: true)
@@ -64,6 +64,6 @@ class DefaultConvertUserLocationCoordinator: ConvertUserLocationCoordinator {
 
 extension DefaultConvertUserLocationCoordinator: CoordinatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: Coordinator) {
-        self.childCoordinators = self.childCoordinators.filter{ $0.type != childCoordinator.type }
+        self.childCoordinators = self.childCoordinators.filter { $0.type != childCoordinator.type }
     }
 }

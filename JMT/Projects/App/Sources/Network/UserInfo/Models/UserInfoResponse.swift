@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct UserInfoResponse<T:Decodable>: Decodable {
+struct UserInfoResponse<T: Decodable>: Decodable {
     let data: T
     let message: String
     let code: String
@@ -21,8 +21,10 @@ struct UserInfoData: Decodable {
 }
 
 extension UserInfoResponse {
-    var toDomain: UserInfoModel {
-        let model = data as! UserInfoData
-        return UserInfoModel(id: model.id , nickname: model.nickname, profileImg: model.profileImg ?? "")
+    var toDomain: UserInfoModel? {
+        guard let model = data as? UserInfoData else { return nil }
+        return UserInfoModel(id: model.id,
+                             nickname: model.nickname,
+                             profileImg: model.profileImg ?? "")
     }
 }

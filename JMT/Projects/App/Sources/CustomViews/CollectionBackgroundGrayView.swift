@@ -6,25 +6,15 @@
 //
 
 import Foundation
-import UIKit
 import SnapKit
+import UIKit
 
 class CollectionBackgroundGrayView: UICollectionReusableView {
-    
-//    private let backgroundView = UIView().then {
-//        $0.backgroundColor = JMTengAsset.gray100.color
-//    }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         backgroundColor = JMTengAsset.gray100.color
-//        addSubview(backgroundView)
-//        
-//        backgroundView.snp.makeConstraints {
-//            $0.top.leading.trailing.equalToSuperview()
-//            $0.bottom.equalToSuperview()
-//        }
     }
 
     required init?(coder: NSCoder) {

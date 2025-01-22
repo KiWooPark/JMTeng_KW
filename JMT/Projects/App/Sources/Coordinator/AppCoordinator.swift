@@ -11,13 +11,11 @@ protocol AppCoordinator: Coordinator {
     func setSocialLoginCoordinator()
     func showSocialLoginViewController()
     
-    // 탭바 컨트롤러에 사용할 메소드 정의
     func setTabBarCoordinator()
     func showTabBarViewController()
 
     func logout()
     func updateAllRestaurantsData()
-    
 }
 
 protocol RestaurantsDataUpdatable {
@@ -26,7 +24,7 @@ protocol RestaurantsDataUpdatable {
 
 class DefaultAppCoordinator: AppCoordinator {
    
-    var parentCoordinator: Coordinator? = nil
+    var parentCoordinator: Coordinator?
     
     var childCoordinators: [Coordinator] = []
     var navigationController: UINavigationController?
@@ -39,7 +37,7 @@ class DefaultAppCoordinator: AppCoordinator {
     }
     
     func start() {
-        if DefaultKeychainService.shared.accessToken == nil {
+        if DefaultKeychainService.shared.getValue(for: KeychainKey.accessToken, type: String.self) != nil {
             showSocialLoginViewController()
         } else {
             showTabBarViewController()
@@ -50,16 +48,17 @@ class DefaultAppCoordinator: AppCoordinator {
         if getChildCoordinator(.socialLogin) == nil {
             setSocialLoginCoordinator()
         }
-        
-        let socialLocinCoordinator = getChildCoordinator(.socialLogin) as! SocialLoginCoordinator
-        socialLocinCoordinator.logout()
-
+    
+        if let socialLocinCoordinator = getChildCoordinator(.socialLogin) as? SocialLoginCoordinator {
+            socialLocinCoordinator.logout()
+        }
     }
     
     func setSocialLoginCoordinator() {
-        let socialLoginCoordinator = DefaultSocialLoginCoordinator(navigationController: navigationController,
-                                                        parentCoordinator: self,
-                                                        finishDelegate: self)
+        let socialLoginCoordinator = DefaultSocialLoginCoordinator(
+            navigationController: navigationController,
+            parentCoordinator: self,
+            finishDelegate: self)
         
         childCoordinators.append(socialLoginCoordinator)
     }
@@ -69,13 +68,15 @@ class DefaultAppCoordinator: AppCoordinator {
             setSocialLoginCoordinator()
         }
         
-        let socialLocinCoordinator = getChildCoordinator(.socialLogin) as! SocialLoginCoordinator
-        socialLocinCoordinator.start()
+        if let socialLocinCoordinator = getChildCoordinator(.socialLogin) as? SocialLoginCoordinator {
+            socialLocinCoordinator.start()
+        }
     }
     
     func setTabBarCoordinator() {
-        let coordinator = DefaultTabBarCoordinator(parentCoordinator: self,
-                                                   finishDelegate: self)
+        let coordinator = DefaultTabBarCoordinator(
+            parentCoordinator: self,
+            finishDelegate: self)
         
         childCoordinators.append(coordinator)
     }
@@ -85,19 +86,19 @@ class DefaultAppCoordinator: AppCoordinator {
             setTabBarCoordinator()
         }
         
-        let coordinator = getChildCoordinator(.tabBar) as! TabBarCoordinator
-        coordinator.start()
+        if let coordinator = getChildCoordinator(.tabBar) as? TabBarCoordinator {
+            coordinator.start()
+        }
     }
     
-    
     func getChildCoordinator(_ type: CoordinatorType) -> Coordinator? {
-        var childCoordinator: Coordinator? = nil
+        var childCoordinator: Coordinator?
         
         switch type {
         case .socialLogin:
             childCoordinator = childCoordinators.first(where: { $0 is SocialLoginCoordinator })
         case .tabBar:
-            childCoordinator = childCoordinators.first(where: { $0 is TabBarCoordinator})
+            childCoordinator = childCoordinators.first(where: { $0 is TabBarCoordinator })
         default:
             break
         }
@@ -117,6 +118,6 @@ class DefaultAppCoordinator: AppCoordinator {
 
 extension DefaultAppCoordinator: CoordinatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: Coordinator) {
-        self.childCoordinators = self.childCoordinators.filter{ $0.type != childCoordinator.type }
+        self.childCoordinators = self.childCoordinators.filter { $0.type != childCoordinator.type }
     }
 }

@@ -10,12 +10,11 @@ import UIKit
 class SecondSegmentTableViewCell: UITableViewCell{
     
     @IBOutlet weak var mainView: UIView!
-    @IBOutlet weak var Resturantexplanation: UILabel!
+    @IBOutlet weak var resturantexplanation: UILabel!
     @IBOutlet weak var mainCollection: UICollectionView!
     
     @IBOutlet weak var groupId: UILabel!
     
-    @IBOutlet weak var mainImage: UIImageView!
     @IBOutlet weak var resturantName: UILabel!
     private var imageViews: [UIImageView] = []
     var imageUrls: [String] = [] // 이미지 URL 배열
@@ -41,13 +40,13 @@ class SecondSegmentTableViewCell: UITableViewCell{
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        Resturantexplanation.text = nil
+        resturantexplanation.text = nil
         resturantName.text = nil
         reviewImagesURL = []
     }
     
     func configure(with review: Review?) {
-        Resturantexplanation.text = review?.reviewContent ?? ""
+        resturantexplanation.text = review?.reviewContent ?? ""
         resturantName.text = review?.groupName ?? ""
 
         reviewImagesURL = review?.reviewImages ?? []
@@ -61,7 +60,7 @@ extension SecondSegmentTableViewCell: UICollectionViewDelegate, UICollectionView
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "myPageReviewCollectionViewCell", for: indexPath) as? myPageReviewCollectionViewCell else {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "myPageReviewCollectionViewCell", for: indexPath) as? MyPageReviewCollectionViewCell else {
             fatalError("Unable to dequeue myPageReviewCollectionViewCell")
         }
         let imageName = reviewImagesURL[indexPath.row]
@@ -72,6 +71,4 @@ extension SecondSegmentTableViewCell: UICollectionViewDelegate, UICollectionView
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 2
     }
-    
-    
 }

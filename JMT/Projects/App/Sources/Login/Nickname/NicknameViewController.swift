@@ -93,7 +93,7 @@ class NicknameViewController: UIViewController, KeyboardEvent {
                 self?.nextButton.isEnabled = isEnabled
                 self?.nextButton.backgroundColor = isEnabled ? JMTengAsset.main500.color : JMTengAsset.main200.color
                 self?.nicknameAvailabilityLabel.text = text
-                self?.nicknameCheckStackView.isHidden = (text == "") ? true : false
+                self?.nicknameCheckStackView.isHidden = text.isEmpty
                 self?.nicknameCheckImageView.image = isEnabled ? UIImage(named: "CheckMark") : UIImage(named: "Xmark")
                 self?.nicknameAvailabilityLabel.textColor = isEnabled ? JMTengAsset.green500.color : JMTengAsset.red500.color
             }

@@ -5,9 +5,9 @@
 //  Created by PKW on 2024/02/04.
 //
 
-import UIKit
 import SnapKit
 import Then
+import UIKit
 
 class SearchRestaurantViewController: UIViewController {
 
@@ -172,7 +172,7 @@ extension SearchRestaurantViewController: UITableViewDataSourcePrefetching {
 // MARK: - TextField Delegate
 extension SearchRestaurantViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        guard textField.text != "" else { return true }
+        guard textField.text?.isEmpty == false else { return true }
         
         viewModel?.isSearch = true
         fetchSearchRestaurantsData()
@@ -180,8 +180,8 @@ extension SearchRestaurantViewController: UITextFieldDelegate {
         return true
     }
 
-    @objc func textFieldDidChange(_ textField: UITextField) {
-
+    @objc 
+    func textFieldDidChange(_ textField: UITextField) {
         viewModel?.currentPage = 1
         viewModel?.isSearch = false
         viewModel?.isEnd = false
@@ -190,7 +190,3 @@ extension SearchRestaurantViewController: UITextFieldDelegate {
         searchRestaurantResultTableView.reloadData()
     }
 }
-
-
-
-

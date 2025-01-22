@@ -5,9 +5,9 @@
 //  Created by PKW on 3/15/24.
 //
 
+import SnapKit
 import UIKit
 import WebKit
-import SnapKit
 
 enum WebViewUrl {
     case base
@@ -106,14 +106,13 @@ class GroupWebViewController: UIViewController, KeyboardEvent {
             guard let url = self.webView.url?.absoluteString else {
                 return
             }
-            
-            print(url)
-            
         }
     }
     
     func loadWebPage() {
+        
         var url = ""
+        
         switch webViewUrlType {
         case .base:
             url = WebViewUrl.base.urlString
@@ -125,7 +124,7 @@ class GroupWebViewController: UIViewController, KeyboardEvent {
             url = ""
         }
         
-        let accessToken = DefaultKeychainService.shared.accessToken ?? ""
+        let accessToken = DefaultKeychainService.shared.getValue(for: KeychainKey.accessToken, type: String.self) ?? ""
     
         if let url = URL(string: url) {
             var request = URLRequest(url: url)
@@ -133,8 +132,6 @@ class GroupWebViewController: UIViewController, KeyboardEvent {
             webView.load(request)
         }
     }
-    
-  
     
     private func parseJSONStringToDictionary(jsonString: String) -> [String: Any]? {
         if let jsonData = jsonString.data(using: .utf8) {
@@ -153,8 +150,6 @@ class GroupWebViewController: UIViewController, KeyboardEvent {
     
     private func handleJSONDataBasedOnName(jsonString: String) {
         
-        print("123123", jsonString)
-        
         if let dictionary = parseJSONStringToDictionary(jsonString: jsonString),
            let name = dictionary["name"] as? String {
             switch name {
@@ -165,13 +160,13 @@ class GroupWebViewController: UIViewController, KeyboardEvent {
                 }
             case "navigation":
                 // 네비게이션 관련 처리
-                if let data = dictionary["data"] as? [String: Any], let isVisible = data["isVisible"] as? Bool {
+                if let data = dictionary["data"] as? [String: Any], let _ = data["isVisible"] as? Bool {
 //                    handleNavigation(isVisible: isVisible)
                 }
             case "navigate":
                 if let data = dictionary["data"] as? [String: Any],
                     let route = data["route"] as? String,
-                    let groupId = data["Id"] as? Int {
+                    let _ = data["Id"] as? Int {
                     
                     handleNavigate(route: route)
                 }
@@ -179,6 +174,12 @@ class GroupWebViewController: UIViewController, KeyboardEvent {
                 // 뒤로가기 관련 처리
                 if let data = dictionary["data"] as? [String: Any], let enable = data["enable"] as? Bool {
                     handleBack(isEnable: enable)
+                }
+            case "requestResponse":
+                // 로그인 가입 완료 후 홈 화면으로 이동
+                // 선택한 그룹으로 변경
+                if let data = dictionary["data"] as? [String: Any], let groupId = data["groupId"] as? Int {
+                    handleJoinGroup(groupId: groupId)
                 }
             default:
                 // 알 수 없는 name 값 처리
@@ -235,7 +236,7 @@ extension GroupWebViewController: WKUIDelegate {
 extension GroupWebViewController {
     
     private func handleToken(str: String) {
-        let accessToken = DefaultKeychainService.shared.accessToken ?? ""
+        let accessToken = DefaultKeychainService.shared.getValue(for: KeychainKey.accessToken, type: String.self) ?? ""
         evaluateJavaScriptFunction(functionName: str, parameter: accessToken)
     }
   
@@ -262,4 +263,14 @@ extension GroupWebViewController {
         }
     }
     
+    private func handleJoinGroup(groupId: Int) {
+        Task {
+            do {
+                try await UpdateGroupAPI.updateSelectedGroupAsync(request: SelectedGroupRequest(groupId: groupId))
+                viewModel?.coordinator?.goToHomeViewController()
+            } catch {
+                print(error)
+            }
+        }
+    }
 }

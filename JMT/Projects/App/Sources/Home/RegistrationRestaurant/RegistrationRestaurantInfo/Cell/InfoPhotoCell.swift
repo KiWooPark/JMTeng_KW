@@ -23,12 +23,7 @@ class InfoPhotoCell: UICollectionViewCell {
         
         menuImageView.layer.cornerRadius = 8
     }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
 
-    }
-    
     @IBAction func didTabDeleteButton(_ sender: UIButton) {
         delegate?.didTabDeleteButton(in: self)
     }

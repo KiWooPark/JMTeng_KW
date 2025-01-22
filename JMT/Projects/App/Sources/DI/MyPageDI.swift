@@ -41,8 +41,8 @@ struct MyPageDI: Assembly {
             let viewModel = r.resolve(MyPageManageViewModel.self)!
             c.viewModel = viewModel
         }
-        
-        //ServiceTermsVC
+         
+        // ServiceTermsVC
         container.register(ServiceTermsViewModel.self) { r in
             let viewModel = ServiceTermsViewModel()
             return viewModel
@@ -53,7 +53,7 @@ struct MyPageDI: Assembly {
             c.viewModel = viewModel
         }
         
-        //ServiceTermsVC
+        // ServiceTermsVC
         container.register(ServiceUseViewModel.self) { r in
             let viewModel = ServiceUseViewModel()
             return viewModel
@@ -64,7 +64,7 @@ struct MyPageDI: Assembly {
             c.viewModel = viewModel
         }
         
-        //changeNickname
+        // changeNickname
         container.register(MyPageChangeNickNameViewModel.self) { r in
             let viewModel = MyPageChangeNickNameViewModel()
             return viewModel

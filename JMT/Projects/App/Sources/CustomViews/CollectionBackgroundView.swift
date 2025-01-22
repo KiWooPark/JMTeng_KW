@@ -5,9 +5,9 @@
 //  Created by PKW on 2024/01/31.
 //
 
-import UIKit
 import SnapKit
 import Then
+import UIKit
 
 class CollectionBackgroundView: UICollectionReusableView {
     

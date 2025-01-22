@@ -5,9 +5,9 @@
 //  Created by PKW on 2023/12/22.
 //
 
-import UIKit
-import SnapKit
 import CoreLocation
+import SnapKit
+import UIKit
 
 class SearchViewController: UIViewController {
     
@@ -25,7 +25,6 @@ class SearchViewController: UIViewController {
     @IBOutlet weak var pageVCContainerView: UIView!
     
     var pageViewController: SearchPageViewController?
-    var currentIndex: Int = 0
     
     // MARK: - View Lifecycle
     override func viewDidLoad() {
@@ -36,10 +35,9 @@ class SearchViewController: UIViewController {
         
         tagCollectionView.delegate = self
         tagCollectionView.dataSource = self
+        pageViewController?.searchPVDelegate = self
         
         viewModel?.fetchRecentSearchRestaurants()
-        
-        pageViewController?.searchPVDelegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -88,8 +86,6 @@ class SearchViewController: UIViewController {
                 make.leading.trailing.top.bottom.equalToSuperview()
             }
         }
-        
-        searchTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
     }
     
     // MARK: - Actions
@@ -117,11 +113,13 @@ class SearchViewController: UIViewController {
     
     
     // MARK: - Helper Methods
+    // 최근 검색어 업데이트
     func updateRecentKeyword(keyword: String) {
         viewModel?.saveRecentSearchRestaurants(keyword: keyword)
         viewModel?.fetchRecentSearchRestaurants()
     }
     
+    // 검색 상태 UI 업데이트
     func updateUI(isSearch: Bool) {
         DispatchQueue.main.async {
             if isSearch {
@@ -143,25 +141,33 @@ class SearchViewController: UIViewController {
         }
     }
     
+    // 검색 데이터 가져오기
     func fetchData(keyword: String) {
-        viewModel?.isEmptyGroup = UserDefaultManager.selectedGroupId == nil ? true : false
+        
+        guard keyword != "" else { return }
+        
+        viewModel?.restaurants.removeAll()
+        viewModel?.groupList.removeAll()
+        viewModel?.outBoundrestaurants.removeAll()
+        
+        // 그룹에 가입되어 있는지 체크
+        viewModel?.isEmptyGroup = UserDefaultManager.selectedGroupId == nil
         
         Task {
             do {
-                if viewModel?.isEmptyGroup == true {
-                    try await viewModel?.fetchGroupsAsync(keyword: keyword)
-                    try await viewModel?.fetchOutBoundRestaurantsAsync(keyword: keyword)
-                } else {
+                if viewModel?.isEmptyGroup == false {
                     try await viewModel?.fetchRestaurantsAsync(keyword: keyword)
-                    try await viewModel?.fetchGroupsAsync(keyword: keyword)
-                    try await viewModel?.fetchOutBoundRestaurantsAsync(keyword: keyword)
                 }
                 
-                NotificationCenter.default.post(name: .didUpdateGroup, object: nil)
+                try await viewModel?.fetchGroupsAsync(keyword: keyword)
+                try await viewModel?.fetchOutBoundRestaurantsAsync(keyword: keyword)
+                
+                NotificationCenter.default.post(name: .didUpdateSearchTabData, object: nil)
                 
                 updateUI(isSearch: true)
+                
             } catch {
-                print(error)
+                print("SearchViewController fetchData Error", error)
             }
         }
     }
@@ -215,21 +221,6 @@ extension SearchViewController: UITextFieldDelegate {
         fetchData(keyword: keyword)
         
         return true
-    }
-    
-    @objc func textFieldDidChange(_ textField: UITextField) {
-        
-        viewModel?.restaurants.removeAll()
-        viewModel?.groupList.removeAll()
-        viewModel?.outBoundrestaurants.removeAll()
-        
-        DispatchQueue.main.async {
-            self.recentContainerView.isHidden = false
-            self.tagCollectionView.isHidden = false
-            self.pageVCContainerView.isHidden = true
-            
-            self.segmentedControllerContainerView.isHidden = true
-        }
     }
 }
 

@@ -45,7 +45,7 @@ class CropPhotoViewController: UIViewController {
         setupUI()
     }
     
-    @IBAction func DoneButton(_ sender: Any) {
+    @IBAction func tabNextButton(_ sender: Any) {
      
         guard let image = imageView.image else { return }
         
@@ -68,7 +68,7 @@ class CropPhotoViewController: UIViewController {
     func setupImageView() {
         
         let imageRatio: Double = Double((originalImage?.size.width ?? 0.0) / (originalImage?.size.height ?? 0.0))
-        let cropViewRatio: Double =  Double(cropAreaView.frame.width / cropAreaView.frame.height)
+        let cropViewRatio: Double = Double(cropAreaView.frame.width / cropAreaView.frame.height)
         let screenWidth = UIScreen.main.bounds.width
     
         if cropViewRatio > imageRatio {
@@ -101,7 +101,7 @@ extension CropPhotoViewController: UIGestureRecognizerDelegate {
             var transform = imageView.transform
             // Apply zoom level.
             transform = transform.scaledBy(x: sender.scale,
-                                            y: sender.scale)
+                                           y: sender.scale)
             imageView.transform = transform
         case .ended:
             pinchGestureEnded()
@@ -222,7 +222,8 @@ final class CropAreaView: UIView {
         let layer = CAShapeLayer()
         let path = CGMutablePath()
 
-        path.addRoundedRect(in: bounds, cornerWidth: bounds.width/2, cornerHeight: bounds.width/2)
+        path.addRoundedRect(in: bounds, cornerWidth: bounds.width / 2, 
+                            cornerHeight: bounds.width / 2)
         path.addRect(bounds)
 
         layer.path = path

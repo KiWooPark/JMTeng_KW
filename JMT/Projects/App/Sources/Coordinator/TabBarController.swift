@@ -8,6 +8,7 @@
 import UIKit
 
 class DefaultTabBarController: UITabBarController {
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -17,7 +18,6 @@ class DefaultTabBarController: UITabBarController {
 
 extension DefaultTabBarController: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-      
         if let nvc = viewController as? UINavigationController {
             let rootViewController = nvc.viewControllers.first
             
@@ -32,8 +32,19 @@ extension DefaultTabBarController: UITabBarControllerDelegate {
                     groupVC.loadWebPage()
                 }
             default:
-                print("123123")
+                print("DefaultTabBarController Default")
             }
         }
+    }
+    
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        let currentSelectedIndex = tabBarController.selectedIndex
+        guard let newSelectedIndex = tabBarController.viewControllers?.firstIndex(of: viewController) else { return true }
+        
+        if currentSelectedIndex == newSelectedIndex {
+            return false
+        }
+
+        return true
     }
 }

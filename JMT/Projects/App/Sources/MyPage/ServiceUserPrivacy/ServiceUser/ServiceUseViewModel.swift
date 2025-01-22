@@ -8,9 +8,6 @@
 import Foundation
 
 class ServiceUseViewModel {
-    
     weak var coordinator: ServiceUseCoordinator?
-    
-    
     let test = "홈"
 }

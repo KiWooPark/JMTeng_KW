@@ -5,22 +5,17 @@
 //  Created by PKW on 2023/12/22.
 //
 
-import Foundation
 import Alamofire
-
+import Foundation
 
 class MyPageViewModel {
     
     weak var coordinator: MyPageCoordinator?
-    private let keychainAccess: KeychainAccessible
+    private let keychainAccess: DefaultKeychainService
     
-    let locationManager = LocationManager.shared   
+    let locationManager = LocationManager.shared
     var userId: Int?
     var numberOfRestaurants: Int?
-
-    
-    
-    
     
     var userInfo: MyPageUserLogin? {
         didSet {
@@ -28,52 +23,39 @@ class MyPageViewModel {
         }
     }
     
-//    var totalRestaurants: Int? {
-//            didSet {
-//                onTotalRestaurantsUpdated?()
-//            }
-//        }
-    
     var testRestaurantsData: [OtherUserRestaurantsModelItems] = []
     var testTotalRestaurants: Int = 0
     var testReviews: [Review] = []
-    
-//    var restaurantsData: [Restaurant] = [] {
-//           didSet {
-//               self.onRestaurantsDataUpdated?()
-//           }
-//       }
     var onRestaurantsDataUpdated: (() -> Void)?
     var onUserInfoLoaded: (() -> Void)?
     var onTotalRestaurantsUpdated: (() -> Void)?
     var onDataUpdated: (() -> Void)?
     
-    init(keychainAccess: KeychainAccessible = DefaultKeychainAccessible()) {
+    init(keychainAccess: DefaultKeychainService = DefaultKeychainService.shared) {
         self.keychainAccess = keychainAccess
     }
     
     // ID 토큰과 액세스 토큰 값을 확인하는 함수
     func fetchTokens() {
         // ID 토큰 저장 여부 플래그 확인
-        if let isIdTokenSaved = keychainAccess.getToken("isIdTokenSaved"), isIdTokenSaved == "true", let idToken = keychainAccess.getToken("idToken") {
+        if let isIdTokenSaved = keychainAccess.getValue(for: KeychainKey.isIdTokenSaved, type: Bool.self), isIdTokenSaved == true,
+           let idToken = keychainAccess.getValue(for: KeychainKey.idToken, type: String.self) {
             print("ID Token: \(idToken)")
         } else {
             print("ID Token is not available. Checking if saved correctly...")
         }
-
+        
         // 액세스 토큰 조회
-        if let accessToken = keychainAccess.getToken("accessToken") {
+        if let accessToken = keychainAccess.getValue(for: KeychainKey.accessToken, type: String.self) {
             print("Access Token: \(accessToken)")
         } else {
             print("Access Token is not available")
         }
     }
     
-    
-    func fetchUserInfo(completion: @escaping () -> ()) {
+    func fetchUserInfo(completion: @escaping () -> Void) {
         print("Fetching user info...")
-        guard let accessToken = keychainAccess.getToken("accessToken") else {
-            print("Access Token is not available")
+        guard let accessToken = keychainAccess.getValue(for: KeychainKey.accessToken, type: String.self) else {
             return
         }
         
@@ -99,89 +81,87 @@ class MyPageViewModel {
             }
         }
     }
-
+    
     func fetchRestaurants() {
         
-//        print("Fetching restaurants for user ID: \(String(describing: userId))")
-//
-//        guard let accessToken = keychainAccess.getToken("accessToken") else {
-//            print("Access Token is not available")
-//            return
-//        }
-//
-//        let headers: HTTPHeaders = [
-//            "Authorization": "Bearer \(accessToken)",
-//            "Content-Type": "application/json"
-//        ]
-//
-//        let url = "https://api.jmt-matzip.dev/api/v1/restaurant/search?page=0&size=20"
-//        
-//        // 사용자 위치와 필터 옵션을 포함하는 요청 본문
-//        let parameters: [String: Any] = [
-//            "userLocation": [
-//                "x": "127.0596",
-//                "y": "37.6633"
-//            ],
-//            "filter": [
-//                "categoryFilter": "string",
-//                "isCanDrinkLiquor": true
-//            ]
-//        ]
-//
-//        // Alamofire로 POST 요청 보내기
-//        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers).responseDecodable(of: ResturantResponse.self) { response in
-//            switch response.result {
-//            case .success(let responseData):
-//                print("Successfully fetched restaurants data: \(responseData)")
-//                self.restaurantsData = responseData.data?.restaurants ?? []
-//                self.totalRestaurants = responseData.data?.page?.totalElements // 올바른 접근 방식
-//
-//                self.onRestaurantsDataUpdated?() // 데이터 업데이트 이벤트 호출
-//                
-//            case .failure(let error):
-//                print("Error fetching restaurants data: \(error)")
-//            }
-//        }
+        //        print("Fetching restaurants for user ID: \(String(describing: userId))")
+        //
+        //        guard let accessToken = keychainAccess.getToken("accessToken") else {
+        //            print("Access Token is not available")
+        //            return
+        //        }
+        //
+        //        let headers: HTTPHeaders = [
+        //            "Authorization": "Bearer \(accessToken)",
+        //            "Content-Type": "application/json"
+        //        ]
+        //
+        //        let url = "https://api.jmt-matzip.dev/api/v1/restaurant/search?page=0&size=20"
+        //
+        //        // 사용자 위치와 필터 옵션을 포함하는 요청 본문
+        //        let parameters: [String: Any] = [
+        //            "userLocation": [
+        //                "x": "127.0596",
+        //                "y": "37.6633"
+        //            ],
+        //            "filter": [
+        //                "categoryFilter": "string",
+        //                "isCanDrinkLiquor": true
+        //            ]
+        //        ]
+        //
+        //        // Alamofire로 POST 요청 보내기
+        //        AF.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers).responseDecodable(of: ResturantResponse.self) { response in
+        //            switch response.result {
+        //            case .success(let responseData):
+        //                print("Successfully fetched restaurants data: \(responseData)")
+        //                self.restaurantsData = responseData.data?.restaurants ?? []
+        //                self.totalRestaurants = responseData.data?.page?.totalElements // 올바른 접근 방식
+        //
+        //                self.onRestaurantsDataUpdated?() // 데이터 업데이트 이벤트 호출
+        //
+        //            case .failure(let error):
+        //                print("Error fetching restaurants data: \(error)")
+        //            }
+        //        }
     }
-
+    
     
     func fetchUserId() {
         
         print("Fetching user ID...")
-              // 여기서 사용자 ID를 가져오는 로직 구현 후 성공 시
-          
-            guard let accessToken = keychainAccess.getToken("accessToken") else {
-                print("Access Token is not available")
-                return
-            }
-            
-            let headers: HTTPHeaders = [
-                "accept": "*/*",
-                "Authorization": "Bearer \(accessToken)"
-            ]
-            
-            AF.request("https://api.jmt-matzip.dev/api/v1/user/info", method: .get, headers: headers).responseDecodable(of: MyPageUserLogin.self) { [weak self] response in
-                switch response.result {
-                case .success(let userInfo):
-                    self?.userId = userInfo.data?.id
-                    self?.fetchRestaurants()
-                    print("Successfully fetched user ID: \(self?.userId ?? 0)")
-
-                case .failure(let error):
-                    print(error)
-                }
+        // 여기서 사용자 ID를 가져오는 로직 구현 후 성공 시
+        
+        guard let accessToken = keychainAccess.getValue(for: KeychainKey.accessToken, type: String.self) else {
+            return
+        }
+        
+        let headers: HTTPHeaders = [
+            "accept": "*/*",
+            "Authorization": "Bearer \(accessToken)"
+        ]
+        
+        AF.request("https://api.jmt-matzip.dev/api/v1/user/info", method: .get, headers: headers).responseDecodable(of: MyPageUserLogin.self) { [weak self] response in
+            switch response.result {
+            case .success(let userInfo):
+                self?.userId = userInfo.data?.id
+                self?.fetchRestaurants()
+                print("Successfully fetched user ID: \(self?.userId ?? 0)")
+                
+            case .failure(let error):
+                print(error)
             }
         }
+    }
     
     
     func getUserInfo() {
         UserInfoAPI.getLoginInfo { response in
             switch response {
-            case .success(let info):
-               print(1)
+            case .success:
+                print(1)
             case .failure(let error):
                 print("getUserInfo 실패!!", error)
-              //self.onFailure?()
             }
         }
     }
@@ -199,15 +179,14 @@ class MyPageViewModel {
             }
         }
     }
-        
+    
     func handleLoginSuccess(idToken: String) {
-        keychainAccess.saveToken("idToken", idToken)
-        keychainAccess.saveToken("isIdTokenSaved", "true")
+        keychainAccess.setValue(idToken, for: KeychainKey.idToken)
+        keychainAccess.setValue(true, for: KeychainKey.isIdTokenSaved)
         print("ID Token saved: \(idToken)")
     }
     
     func fetchUserRestaurants() async throws {
-      
         let response = try await ReadRestaurantsAPI.fetchUserRestaurantsAsync(
             request: OtherUserRestaurantsRequest(
                 parameters: OtherUserRestaurantsPageRequest(
@@ -224,7 +203,7 @@ class MyPageViewModel {
                         isCanDrinkLiquor: nil)
                 )))
         
-        // 배열에 데이터 담기 
+        // 배열에 데이터 담기
         let data = response.toDomain
         testRestaurantsData = data.items
         testTotalRestaurants = data.totalCount
@@ -232,5 +211,3 @@ class MyPageViewModel {
         onRestaurantsDataUpdated?()
     }
 }
-
-        

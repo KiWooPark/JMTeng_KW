@@ -14,7 +14,7 @@ var photoKitConfig: PhotoKitConfiguration {
 
 struct PhotoKitConfiguration {
     static var shared: PhotoKitConfiguration = PhotoKitConfiguration()
-    init() { }
+    private init() { }
     
     var library = PhotoKitConfigLibrary()
 }

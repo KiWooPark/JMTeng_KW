@@ -12,4 +12,3 @@ struct SearchRestaurantsRequest: Encodable {
     let x: String?
     let y: String?
 }
-

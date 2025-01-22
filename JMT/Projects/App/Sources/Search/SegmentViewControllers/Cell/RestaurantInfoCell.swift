@@ -5,15 +5,14 @@
 //  Created by PKW on 3/15/24.
 //
 
-import UIKit
 import Kingfisher
+import UIKit
 
 class RestaurantInfoCell: UICollectionViewCell {
     
     @IBOutlet weak var restaurantProfileImageView: UIImageView!
     @IBOutlet weak var groupNameLabel: UILabel!
     @IBOutlet weak var restaurantNameLabel: UILabel!
-    
     
     @IBOutlet weak var categoryView: UIView!
     @IBOutlet weak var categoryLabel: UILabel!
@@ -41,48 +40,21 @@ class RestaurantInfoCell: UICollectionViewCell {
         userNameLabel.text = nil
     }
     
-    func setupRestaurantData(restaurantData: SearchRestaurantsItems?) {
-        if let data = restaurantData {
-            
-            if let restaurantImageUrl = URL(string: data.restaurantImageUrl ?? "") {
-                restaurantProfileImageView.kf.setImage(with: restaurantImageUrl)
-            } else {
-                restaurantProfileImageView.image = JMTengAsset.defaultProfileImage.image
-            }
-            
-            if let userProfileImageUrl = URL(string: data.userProfileImageUrl ?? "") {
-                userProfileImageView.kf.setImage(with: userProfileImageUrl)
-            } else {
-                userProfileImageView.image = JMTengAsset.defaultProfileImage.image
-            }
-            
-            categoryLabel.text = data.category
-            groupNameLabel.text = data.groupName
-            restaurantNameLabel.text = data.name
-            userNameLabel.text = data.userNickName
-        }
-    }
-    
-    func setupOutBoundrestaurantData(outBoundRestaurantData: OutBoundRestaurantsModel?) {
-        if let data = outBoundRestaurantData {
-            
-            if let restaurantImageUrl = URL(string: data.restaurantImageUrl ?? "") {
-                restaurantProfileImageView.kf.setImage(with: restaurantImageUrl)
-            } else {
-                restaurantProfileImageView.image = JMTengAsset.defaultProfileImage.image
-            }
-            
-            if let userProfileImageUrl = URL(string: data.userProfileImageUrl ?? "") {
-                userProfileImageView.kf.setImage(with: userProfileImageUrl)
-            } else {
-                userProfileImageView.image = JMTengAsset.defaultProfileImage.image
-            }
-            
-            categoryLabel.text = data.category
-            groupNameLabel.text = data.groupName
-            restaurantNameLabel.text = data.name
-            userNameLabel.text = data.userNickName
-
+    func setupRestaurantInfoData<T>(data: T) {
+        if let restaurantData = data as? SearchRestaurantsModel {
+            restaurantProfileImageView.loadImage(urlString: restaurantData.restaurantImageUrl, defaultImage: JMTengAsset.resultEmptyImage.image)
+            userProfileImageView.loadImage(urlString: restaurantData.userProfileImageUrl, defaultImage: JMTengAsset.defaultProfileImage.image)
+            categoryLabel.text = restaurantData.category
+            groupNameLabel.text = restaurantData.groupName
+            restaurantNameLabel.text = restaurantData.name
+            userNameLabel.text = restaurantData.userNickName
+        } else if let outBoundRestaurantData = data as? OutBoundRestaurantsModel {
+            restaurantProfileImageView.loadImage(urlString: outBoundRestaurantData.restaurantImageUrl, defaultImage: JMTengAsset.resultEmptyImage.image)
+            userProfileImageView.loadImage(urlString: outBoundRestaurantData.userProfileImageUrl, defaultImage: JMTengAsset.defaultProfileImage.image)
+            categoryLabel.text = outBoundRestaurantData.category
+            groupNameLabel.text = outBoundRestaurantData.groupName
+            restaurantNameLabel.text = outBoundRestaurantData.name
+            userNameLabel.text = outBoundRestaurantData.userNickName
         }
     }
 }

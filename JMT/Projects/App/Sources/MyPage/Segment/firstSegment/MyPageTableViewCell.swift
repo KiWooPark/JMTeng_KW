@@ -5,12 +5,11 @@
 //  Created by 이지훈 on 1/19/24.
 //
 
-import UIKit
 import Alamofire
 import Kingfisher
+import UIKit
 
 class MyPageRegisterResturantTableViewCell: UITableViewCell {
-    
     
     @IBOutlet weak var myResturantImage: UIImageView!
     
@@ -21,9 +20,7 @@ class MyPageRegisterResturantTableViewCell: UITableViewCell {
     
     @IBOutlet weak var myPageImage: UIImageView!
     
-    @IBOutlet weak var MyNickname: UILabel!
-    
-    
+    @IBOutlet weak var myNickname: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -39,7 +36,7 @@ class MyPageRegisterResturantTableViewCell: UITableViewCell {
         resturantLabel.text = model?.name ?? ""
         grouplabel.text = model?.groupName ?? ""
         categoryLable.text = model?.category ?? ""
-        MyNickname.text = model?.userNickName ?? ""
+        myNickname.text = model?.userNickName ?? ""
         
         if let url = URL(string: model?.restaurantImageUrl ?? "") {
             myResturantImage.kf.setImage(with: url)
@@ -58,7 +55,7 @@ class MyPageRegisterResturantTableViewCell: UITableViewCell {
         resturantLabel.text = restaurant?.name ?? ""
         grouplabel.text = restaurant?.groupName ?? ""
         categoryLable.text = restaurant?.category ?? ""
-        MyNickname.text = restaurant?.userNickName ?? ""
+        myNickname.text = restaurant?.userNickName ?? ""
         
         if let imageUrlString = restaurant?.restaurantImageURL, let imageUrl = URL(string: imageUrlString) {
             myResturantImage.kf.setImage(
@@ -77,7 +74,6 @@ class MyPageRegisterResturantTableViewCell: UITableViewCell {
             myResturantImage.image = UIImage(named: "dummyIcon")
             print("Fallback to dummyIcon due to invalid URL")
         }
-
         
         // 사용자 프로필 이미지 로드 - Kingfisher를 사용
         if let userImageUrlString = restaurant?.userProfileImageURL, let userImageUrl = URL(string: userImageUrlString) {
@@ -86,10 +82,4 @@ class MyPageRegisterResturantTableViewCell: UITableViewCell {
             myPageImage.image = UIImage(named: "defaultProfile")
         }
     }
-
 }
-
-
-
-
-

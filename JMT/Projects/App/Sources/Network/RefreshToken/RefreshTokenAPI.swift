@@ -5,11 +5,11 @@
 //  Created by PKW on 2024/01/19.
 //
 
-import Foundation
 import Alamofire
+import Foundation
 
 struct RefreshTokenAPI {
-    static func refreshToken(request: RefreshTokenRequest, completion: @escaping (Result<RefreshTokenModel, NetworkError>) -> ()) {
+    static func refreshToken(request: RefreshTokenRequest, completion: @escaping (Result<RefreshTokenModel, NetworkError>) -> Void) {
     
         AF.request(RefreshTokenTarget.refreshToken(request), interceptor: DefaultRequestInterceptor())
             .validate(statusCode: 200..<300)

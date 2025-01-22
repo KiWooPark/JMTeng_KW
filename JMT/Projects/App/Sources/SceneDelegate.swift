@@ -5,20 +5,18 @@
 //  Created by cheonsong on 2022/09/05.
 //
 
-import UIKit
-import Swinject
 import NMapsMap
 import SwiftKeychainWrapper
+import Swinject
+import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    
     var window: UIWindow?
     let injector = DependencyInjector.shared
     var appCoordinator: AppCoordinator?
     var locationManager = LocationManager.shared
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        
         guard let scene = (scene as? UIWindowScene) else { return }
         
         if !UserDefaultManager.hasBeenLaunchedBeforeFlag {
@@ -35,55 +33,42 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window?.rootViewController = navigationController
         self.window?.makeKeyAndVisible()
         
-        configNavigationBar()
-      
-        NMFAuthManager.shared().clientId = "4mc8nybxwl"
+        self.configNavigationBar()
+        NetworkMonitor.shared.startMonitoring()
+
+        self.appCoordinator = DefaultAppCoordinator(navigationController: navigationController)
         
-        appCoordinator = DefaultAppCoordinator(navigationController: navigationController)
-        
-        injector.assemble([SocialLoginDI(),
-                           
-                           NicknameDI(),
-                           
-                           ProfileImageDI(), ProfilePopupDI(),
-                           
-                           HomeDI(), UserLocationDI(), RegistrationRestaurantDI(),
-                           
-                           SearchDI(), RestaurantDetailDI(),
-                           
-                           GroupDI(),
-                           
-                           MyPageDI(),
-                           
-                          ])
+        self.injector.assemble([SocialLoginDI(),
+                                
+                                NicknameDI(),
+                                
+                                ProfileImageDI(), ProfilePopupDI(),
+                                
+                                HomeDI(), UserLocationDI(), RegistrationRestaurantDI(),
+                                
+                                SearchDI(), RestaurantDetailDI(),
+                                
+                                GroupDI(),
+                                
+                                MyPageDI()])
         
         self.appCoordinator?.start()
     }
     
-    
-
     func sceneDidDisconnect(_ scene: UIScene) {
-        
+        NetworkMonitor.shared.stopMonitoring()
     }
     
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        
-    }
+    func sceneDidBecomeActive(_ scene: UIScene) {}
     
-    func sceneWillResignActive(_ scene: UIScene) { 
-        
-    }
+    func sceneWillResignActive(_ scene: UIScene) {}
     
-    func sceneWillEnterForeground(_ scene: UIScene) {
-       
-    }
+    func sceneWillEnterForeground(_ scene: UIScene) {}
     
-    func sceneDidEnterBackground(_ scene: UIScene) {
-        
-    }
+    func sceneDidEnterBackground(_ scene: UIScene) {}
     
     @objc func appWillEnterForeground() {
-         checkLocationAuthorization()
+        self.checkLocationAuthorization()
     }
     
     func checkLocationAuthorization() {
@@ -95,14 +80,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             // 권한이 없는 경우 사용자에게 권한 요청
             self.window?.rootViewController?.showAccessDeniedAlert(type: .location)
         case .notDetermined:
-            locationManager.requestWhenInUseAuthorization()
+            self.locationManager.requestWhenInUseAuthorization()
         @unknown default:
             fatalError("Unhandled authorization status")
         }
     }
     
     func configNavigationBar() {
-        
         let appearance = UINavigationBarAppearance()
         appearance.backgroundColor = .white
         appearance.titleTextAttributes = [.foregroundColor: UIColor.black]
@@ -123,4 +107,3 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 }
-

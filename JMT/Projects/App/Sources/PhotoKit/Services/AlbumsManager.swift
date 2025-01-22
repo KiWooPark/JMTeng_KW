@@ -12,10 +12,7 @@ import UIKit
 class AlbumsManager: NSObject, PHPhotoLibraryChangeObserver {
     
     weak var delegate: PHPhotoLibraryChangeObserver?
-    
     let imageManager = PHCachingImageManager()
-//    let photoservice = DefaultPhotoAuthService()
-
     var albums = [AlbumInfo]()
     var photos = [PhotoInfo]()
     
@@ -28,7 +25,7 @@ class AlbumsManager: NSObject, PHPhotoLibraryChangeObserver {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
     
-    func fetchAlbums(completion: @escaping () -> ()) {
+    func fetchAlbums(completion: @escaping () -> Void) {
         
         if !albums.isEmpty {
             completion()
@@ -46,7 +43,7 @@ class AlbumsManager: NSObject, PHPhotoLibraryChangeObserver {
         let albumsResult = PHAssetCollection.fetchAssetCollections(with: .album,
                                                                    subtype: .any,
                                                                    options: options)
-        
+            
         for result in [smartAlbumsResult, albumsResult] {
             result.enumerateObjects { assetCollection, _, _ in
                 var album = AlbumInfo()
@@ -56,17 +53,19 @@ class AlbumsManager: NSObject, PHPhotoLibraryChangeObserver {
                 
                 // 앨범의 사진 수
                 album.numberOfItems = self.photosCount(collection: assetCollection)
-                
                 if album.numberOfItems > 0 {
-                    let r = PHAsset.fetchKeyAssets(in: assetCollection, options: nil)
-                    if let first = r?.firstObject {
+                    let phResult = PHAsset.fetchKeyAssets(in: assetCollection, options: nil)
+                    if let first = phResult?.firstObject {
                         let deviceScale = UIScreen.main.scale
                         let targetSize = CGSize(width: 78 * deviceScale, height: 78 * deviceScale)
                         let options = PHImageRequestOptions()
                         options.isSynchronous = true
                         options.deliveryMode = .opportunistic
                         
-                        self.imageManager.requestImage(for: first, targetSize: targetSize, contentMode: .aspectFill, options: options) { image, _ in
+                        self.imageManager.requestImage(for: first,
+                                                       targetSize: targetSize,
+                                                       contentMode: .aspectFill,
+                                                       options: options) { image, _ in
                             album.thumbnail = image
                         }
                     }
@@ -74,7 +73,8 @@ class AlbumsManager: NSObject, PHPhotoLibraryChangeObserver {
                     album.collection = assetCollection
                     
                     // 비디오가 포함된 앨범인지 체크
-                    if !(assetCollection.assetCollectionSubtype == .smartAlbumSlomoVideos || assetCollection.assetCollectionSubtype == .smartAlbumVideos) {
+                    if !(assetCollection.assetCollectionSubtype == .smartAlbumSlomoVideos || 
+                         assetCollection.assetCollectionSubtype == .smartAlbumVideos) {
                         resultAlbums.append(album)
                     }
                 }
@@ -92,8 +92,7 @@ class AlbumsManager: NSObject, PHPhotoLibraryChangeObserver {
         return result.count
     }
     
-    
-    func albumImagesResult(index: Int, completion: @escaping () -> ()) {
+    func albumImagesResult(index: Int, completion: @escaping () -> Void) {
 
         var phAssets = [PHAsset]()
         
@@ -104,7 +103,8 @@ class AlbumsManager: NSObject, PHPhotoLibraryChangeObserver {
         if let collection = albums[index].collection {
             let currentAlbumFetchResult = PHAsset.fetchAssets(in: collection, options: options)
             
-            guard 0 < currentAlbumFetchResult.count else { return }
+            // swiftlint:disable:next empty_count
+            guard currentAlbumFetchResult.count > 0 else { return }
             
             currentAlbumFetchResult.enumerateObjects { asset, index, stopPointer in
                 guard index <= currentAlbumFetchResult.count - 1 else {
@@ -116,13 +116,17 @@ class AlbumsManager: NSObject, PHPhotoLibraryChangeObserver {
             }
             
             photos = phAssets.enumerated().map { order, info in
-                PhotoInfo(phAsset: info, image: nil, localIdentifier: info.localIdentifier, albumIndex: index, selectedIndex: order, selectedOrder: .none)
+                PhotoInfo(phAsset: info,
+                          image: nil,
+                          localIdentifier: info.localIdentifier,
+                          albumIndex: index,
+                          selectedIndex: order,
+                          selectedOrder: .none)
             }
             completion()
         }
     }
 }
-
 
 extension AlbumsManager {
     func photoLibraryDidChange(_ changeInstance: PHChange) {

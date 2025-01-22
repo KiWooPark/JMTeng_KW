@@ -5,10 +5,10 @@
 //  Created by PKW on 2024/02/04.
 //
 
-import UIKit
 import FloatingPanel
 import SnapKit
 import Toast_Swift
+import UIKit
 
 class RegistrationRestaurantInfoViewController: UIViewController, KeyboardEvent {
     
@@ -37,7 +37,7 @@ class RegistrationRestaurantInfoViewController: UIViewController, KeyboardEvent 
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+                
         if viewModel?.isEdit == true {
             setupEditData()
         }
@@ -55,7 +55,7 @@ class RegistrationRestaurantInfoViewController: UIViewController, KeyboardEvent 
                         let keyboardTopY = keyboardFrame.cgRectValue.origin.y
                         // 현재 선택한 텍스트 필드의 Frame 값
                         let convertedTextFieldFrame = self?.settingInfoCollectionView.convert(textField.frame,
-                                                                   from: textField.superview)
+                                                                                              from: textField.superview)
                         // Y축으로 현재 텍스트 필드의 하단 위치
                         let textFieldBottomY = (convertedTextFieldFrame?.origin.y ?? 0.0) + (convertedTextFieldFrame?.size.height ?? 0.0)
                         
@@ -71,7 +71,7 @@ class RegistrationRestaurantInfoViewController: UIViewController, KeyboardEvent 
                         let keyboardTopY = keyboardFrame.cgRectValue.origin.y
                         // 현재 선택한 텍스트 필드의 Frame 값
                         let convertedTextFieldFrame = self?.settingInfoCollectionView.convert(textField.frame,
-                                                                   from: textField.superview)
+                                                                                              from: textField.superview)
                         // Y축으로 현재 텍스트 필드의 하단 위치
                         let textFieldBottomY = (convertedTextFieldFrame?.origin.y ?? 0.0) + (convertedTextFieldFrame?.size.height ?? 0.0)
                         
@@ -225,7 +225,7 @@ class RegistrationRestaurantInfoViewController: UIViewController, KeyboardEvent 
             heightDimension: .absolute(120) // .fractionalHeight(0.4215)
         )
         
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize,subitems: [item])
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 
         // Section
         let section = NSCollectionLayoutSection(group: group)
@@ -235,7 +235,10 @@ class RegistrationRestaurantInfoViewController: UIViewController, KeyboardEvent 
         
         // Header
         section.boundarySupplementaryItems = [
-            NSCollectionLayoutBoundarySupplementaryItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(1)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
+            NSCollectionLayoutBoundarySupplementaryItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1),
+                                                                                           heightDimension: .estimated(1)),
+                                                        elementKind: UICollectionView.elementKindSectionHeader,
+                                                        alignment: .top)
         ]
         
         // Background
@@ -361,24 +364,20 @@ class RegistrationRestaurantInfoViewController: UIViewController, KeyboardEvent 
         Task {
             do {
                 if viewModel?.isEdit == true {
-                    try await viewModel?.updateEditRestaurantInfo()
 
-                    if let restaurantDetailVC = self.navigationController?.viewControllers.first(where: { $0 is RestaurantDetailViewController }) as? RestaurantDetailViewController {
-                        
-                        let model = EditRestaurantModel(id: viewModel?.recommendRestaurantId ?? -1,
-                                                            introduce: viewModel?.commentString ?? "",
-                                                            category: viewModel?.categoryData.first(where: { $0.1 == true })?.0 ?? "",
-                                                            canDrinkLiquor: viewModel?.isDrinking ?? false,
-                                                            goWellWithLiquor: viewModel?.drinkingComment ?? "",
-                                                            recommendMenu: (viewModel?.tags ?? []).joined())
-                        restaurantDetailVC.viewModel?.updateRestaurantInfo(model: model)
-                                            
-                        restaurantDetailVC.setupData()
-                        restaurantDetailVC.viewModel?.didUpdateRestaurantSeg?()
-                        
-                        self.hideLoadingIndicator()
-                        self.navigationController?.popViewController(animated: true)
-                    }
+                    try await viewModel?.updateEditRestaurantInfo()
+                    
+                    let restaurantData = EditRestaurantModel(id: viewModel?.recommendRestaurantId ?? -1,
+                                                             introduce: viewModel?.commentString ?? "",
+                                                             category: viewModel?.categoryData.first(where: { $0.1 == true })?.0 ?? "",
+                                                             canDrinkLiquor: viewModel?.isDrinking ?? false,
+                                                             goWellWithLiquor: viewModel?.drinkingComment ?? "",
+                                                             recommendMenu: (viewModel?.tags ?? []).joined())
+                    
+                    NotificationCenter.default.post(name: .restaurantDidUpdate, object: self, userInfo: ["restaurantData": restaurantData])
+                    
+                    self.hideLoadingIndicator()
+                    self.navigationController?.popViewController(animated: true)
                 } else {
                     try await viewModel?.registrationRestaurantLocation()
                     try await viewModel?.registrationRestaurantAsync()
@@ -386,11 +385,6 @@ class RegistrationRestaurantInfoViewController: UIViewController, KeyboardEvent 
                     self.hideLoadingIndicator()
                     viewModel?.coordinator?.showDetailRestaurantViewController(id: viewModel?.recommendRestaurantId ?? 0)
                 }
-                
-                if let vc = self.navigationController?.viewControllers.first as? HomeViewController {
-                    vc.viewModel?.didUpdateGroupRestaurantsData?()
-                }
-               
             } catch {
                 self.hideLoadingIndicator()
                 self.showCustomToast(image: JMTengAsset.notCheckMark.image, message: "맛집을 등록하지 못했어요!", padding: 117, position: .bottom)
@@ -442,7 +436,8 @@ extension RegistrationRestaurantInfoViewController: UICollectionViewDelegate {
                 header.delegate = self
                 
                 if let index = viewModel?.categoryData.firstIndex(where: { $0.1 == true }).map({ Int($0) }) {
-                    header.updateHeaderView(category: viewModel?.categoryData[index].0 ?? "", image: viewModel?.categoryData[index].2 ?? UIImage())
+                    header.updateHeaderView(category: viewModel?.categoryData[index].0 ?? "",
+                                            image: viewModel?.categoryData[index].2 ?? UIImage())
                 }
             
                 return header
@@ -567,6 +562,10 @@ extension RegistrationRestaurantInfoViewController: InfoCommentCellDelegate {
 
 extension RegistrationRestaurantInfoViewController: DrinkingCheckCellDelegate {
     func didTabCheckButton(isSelected: Bool) {
+        if isSelected == false {
+            viewModel?.updateDrinkingComment(text: "")
+        }
+        
         viewModel?.updateIsDrinking(isDrinking: isSelected)
     }
 
@@ -596,3 +595,4 @@ extension RegistrationRestaurantInfoViewController: ButtonPopupDelegate {
     
     func didTabCancelButton() { }
 }
+

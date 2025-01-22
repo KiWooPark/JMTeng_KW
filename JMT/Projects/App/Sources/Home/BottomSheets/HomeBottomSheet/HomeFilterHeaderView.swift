@@ -64,17 +64,5 @@ class HomeFilterHeaderView: UICollectionReusableView {
         filterButton1.setTitle(viewModel?.sortList[viewModel?.selectedSortIndex ?? 0], for: .normal)
         filterButton2.setTitle(filter2Title, for: .normal)
         filterButton3.setTitle(filter3Title, for: .normal)
-        
-//        if viewModel?.selectedCategoryIndex == 99999 {
-//            filterButton2.setTitle("종류", for: .normal)
-//        } else {
-//            filterButton2.setTitle(viewModel?.categoryList[viewModel?.selectedCategoryIndex ?? 0], for: .normal)
-//        }
-//        
-//        if viewModel?.selectedDrinkingIndex == 99999 {
-//            filterButton3.setTitle("주류 여부", for: .normal)
-//        } else {
-//            filterButton3.setTitle(viewModel?.drinkingList[viewModel?.selectedDrinkingIndex ?? 0], for: .normal)
-//        }
     }
 }

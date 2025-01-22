@@ -59,7 +59,7 @@ extension TargetType {
 enum RequestParams {
     case qurey(_ parameter: Encodable?)
     case body(_ parameter: Encodable?)
-    case queryAndBody(_ query: Encodable?,_ body: Encodable?)
+    case queryAndBody(_ query: Encodable?, _ body: Encodable?)
 }
 
 extension Encodable {

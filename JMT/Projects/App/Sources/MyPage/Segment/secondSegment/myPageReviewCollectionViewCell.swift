@@ -5,13 +5,12 @@
 //  Created by 이지훈 on 3/11/24.
 //
 
-import UIKit
 import Kingfisher
+import UIKit
 
-class myPageReviewCollectionViewCell: UICollectionViewCell  {
+class MyPageReviewCollectionViewCell: UICollectionViewCell  {
     
     @IBOutlet weak var myPageImageView: UIImageView!
-
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -23,10 +22,8 @@ class myPageReviewCollectionViewCell: UICollectionViewCell  {
         if let url = URL(string: imageName) {
             myPageImageView.kf.setImage(with: url)
         }
-      
+        
         myPageImageView.contentMode = .scaleAspectFill
         myPageImageView.clipsToBounds = true
     }
 }
-
-

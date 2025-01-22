@@ -14,7 +14,6 @@ extension UICollectionViewCell {
         if let collectionView = self.superview as? UICollectionView {
             return collectionView
         }
-        
         return nil
     }
 }
