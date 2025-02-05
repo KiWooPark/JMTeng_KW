@@ -9,7 +9,7 @@ import Foundation
 
 // 5번
 protocol AuthUseCase {
-    func googleLogin(idToken: String, completion: @escaping ((Result<AuthVO, Error>) -> Void))
+    func signInGoogle(completion: @escaping ((Result<AuthVO, Error>) -> Void))
 }
 
 class DefaultAuthUseCase: AuthUseCase {
@@ -19,12 +19,12 @@ class DefaultAuthUseCase: AuthUseCase {
         self.repository = repository
     }
     
-    func googleLogin(idToken: String, completion: @escaping ((Result<AuthVO, Error>) -> Void)) {
-        repository.googleLogin(idToken: idToken) { result in
+    func signInGoogle(completion: @escaping ((Result<AuthVO, Error>) -> Void)) {
+        repository.signInGoogle { result in
             switch result {
-            case .success(let result):
-                // VO를 뷰모델에 전달해야함
-                completion(.success(result))
+            case .success(let data):
+                // 비즈니스 로직 처리!
+                completion(.success(data))
             case .failure(let error):
                 completion(.failure(error))
             }

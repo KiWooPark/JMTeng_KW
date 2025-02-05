@@ -16,15 +16,13 @@ class DefaultAuthRepository: AuthRepository {
     init(dataSource: AuthDataSource) {
         self.dataSource = dataSource
     }
-    
-    func googleLogin(idToken: String, completion: @escaping ((Result<AuthVO, Error>) -> Void)) {
-        dataSource.googleLogin(idToken: idToken) { result in
+
+    func signInGoogle(completion: @escaping ((Result<AuthVO, Error>) -> Void)) {
+        dataSource.signInGoogle { result in
             switch result {
-            case .success(let result):
-                // 여기서 데이터 가공이나 필터링 작업을 수행
-                let result = result.toDomain()
-                
-                completion(.success(result))
+            case .success(let data):
+                // DTO -> VO 변환
+                completion(.success(data.toDomain()))
             case .failure(let error):
                 completion(.failure(error))
             }

@@ -7,7 +7,6 @@
 
 import AuthenticationServices
 import UIKit
-import GoogleSignIn
 
 class SocialLoginViewController: UIViewController {
     
@@ -37,29 +36,13 @@ class SocialLoginViewController: UIViewController {
     @IBAction func didTabGoogleLoginButton(_ sender: Any) {
         guard viewModel?.isEnabled == true else { return }
         
-//        viewModel?.startGoogleLogin()
-        guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else { return }
-        GIDSignIn.sharedInstance.signIn(withPresenting: rootViewController) { [weak self] result, error in
-            guard let self = self else { return }
-            
-            if let error = error {
+        viewModel?.signInGoogle { result in
+            switch result {
+            case .success(let data):
+                print("-------------", data)
+            case .failure(let error):
                 print(error)
-                return
             }
-            
-            guard let idToken = result?.user.idToken?.tokenString else {
-                print(error)
-                return
-            }
-            
-            viewModel?.startGooleLoginTest(idToken: idToken, completion: { result in
-                switch result {
-                case .success(let data):
-                    print("ussCase", data)
-                case .failure(let error):
-                    print(error)
-                }
-            })
         }
     }
     

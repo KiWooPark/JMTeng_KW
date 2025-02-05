@@ -24,11 +24,12 @@ class SocialLoginViewModel {
         self.authUserCase = authUserCase
     }
 
-    func startGooleLoginTest(idToken: String, completion: @escaping ((Result<AuthVO, Error>) -> Void)) {
-        let result = authUserCase.googleLogin(idToken: idToken) { result in
+    func signInGoogle(completion: @escaping ((Result<AuthVO, Error>) -> Void)) {
+        authUserCase.signInGoogle { result in
             switch result {
-            case .success(let data):
-                completion(.success(data))
+            case .success(let result):
+                // 가공된 데이터 뷰에 표시해~
+                completion(.success(result))
             case .failure(let error):
                 completion(.failure(error))
             }
